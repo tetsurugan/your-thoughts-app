@@ -106,3 +106,4 @@ This project is a standard Vite React application.
 *   `/src/context`: Global state (Auth, Tasks)
 *   `/src/lib`: Utilities (Storage, TaskParser)
 *   `/src/pages`: Main screens (TaskList, NewNote, Login, Profile)
+# your-thoughts-app
