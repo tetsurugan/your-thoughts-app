@@ -6,7 +6,7 @@ import { LogIn } from 'lucide-react';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, socialLogin } = useAuth();
+    const { login, socialLogin, enterGuestMode } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -98,6 +98,20 @@ export default function Login() {
                             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true"><path d="M12.96 3.75039C13.89 2.65039 15.17 1.95039 16.48 2.05039C16.94 3.65039 16.34 5.37039 15.44 6.38039C14.56 7.36039 13.19 8.03039 11.95 7.92039C11.45 6.27039 12.09 4.70039 12.96 3.75039ZM16.89 19.3804C15.98 20.7304 14.88 22.0904 13.43 22.0904C12.01 22.0904 11.58 21.2304 10.02 21.2304C8.42004 21.2304 8.01004 22.0604 6.70004 22.0904C5.29004 22.0904 4.07004 20.6104 3.19004 19.3304C1.39004 16.7104 0.0500391 11.9304 1.90004 8.70039C2.82004 7.10039 4.46004 6.09039 6.09004 6.09039C7.63004 6.09039 8.52004 6.95039 9.53004 6.95039C10.51 6.95039 11.23 6.05039 12.8 6.05039C13.44 6.05039 15.22 6.28039 16.35 7.94039C16.25 8.00039 13.31 9.71039 13.36 13.2304C13.38 16.0304 15.82 18.0604 16.89 19.3804Z" /></svg>
                             Continue with Apple
                         </button>
+
+                        <div className="relative flex py-2 items-center">
+                            <div className="flex-grow border-t border-gray-300"></div>
+                            <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase">or</span>
+                            <div className="flex-grow border-t border-gray-300"></div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => { enterGuestMode(); navigate('/'); }}
+                            className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                            Continue as Guest
+                        </button>
                     </div>
                 </form>
 
@@ -117,7 +131,7 @@ export default function Login() {
                         </Link>
                     </p>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

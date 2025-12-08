@@ -23,9 +23,22 @@ export default function Profile() {
                 </div>
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900">{user.name}</h2>
-                    <p className="text-gray-500">{user.email}</p>
+                    {user.isGuest ? (
+                        <p className="text-primary-600 font-medium">Guest Account</p>
+                    ) : (
+                        <p className="text-gray-500">{user.email}</p>
+                    )}
                 </div>
             </div>
+
+            {user.isGuest && (
+                <div className="bg-primary-50 rounded-lg p-4 mb-6 border border-primary-100">
+                    <p className="text-sm text-primary-800">
+                        You are currently using a limited guest account. Your data is saved on this device only.
+                        <span className="font-semibold block mt-1">Sign up to sync your tasks across devices!</span>
+                    </p>
+                </div>
+            )}
 
             <div className="space-y-4">
                 <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-100 overflow-hidden">

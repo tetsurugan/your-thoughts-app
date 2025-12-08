@@ -133,7 +133,7 @@ export default function TaskList() {
                                 <h3 className="text-lg font-medium text-gray-900 mb-1">No tasks yet</h3>
                                 <p className="text-gray-500 text-sm mb-6">Create a task by typing, speaking, or snapping a photo.</p>
                                 <Link
-                                    to="/new"
+                                    to="/new-note"
                                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-full font-medium shadow-sm hover:bg-primary-500 transition-colors"
                                 >
                                     <PlusCircle className="w-5 h-5" />

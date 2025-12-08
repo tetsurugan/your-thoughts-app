@@ -5,6 +5,7 @@ interface User {
     id: string;
     email: string;
     name: string;
+    isGuest?: boolean;
 }
 
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
     signup: (email: string, password: string, name: string) => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
     socialLogin: (provider: 'google' | 'apple') => Promise<void>;
+    enterGuestMode: () => Promise<void>;
     logout: () => void;
 }
 
@@ -96,8 +98,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         storage.remove(STORAGE_KEYS.USER);
     };
 
+    const enterGuestMode = async () => {
+        setError(null);
+        const guestUser: User = {
+            id: 'guest_user',
+            email: '',
+            name: 'Guest User',
+            isGuest: true
+        };
+        setUser(guestUser);
+        storage.set(STORAGE_KEYS.USER, guestUser);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, error, login, signup, logout, forgotPassword, socialLogin }}>
+        <AuthContext.Provider value={{ user, loading, error, login, signup, logout, forgotPassword, socialLogin, enterGuestMode }}>
             {children}
         </AuthContext.Provider>
     );
