@@ -14,7 +14,7 @@ import { isDemoMode } from '../utils/demoMode';
 import { SUCCESS_MESSAGES } from '../utils/messages';
 
 export const TaskListScreen = () => {
-    const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'completed'>('today');
+    const [activeTab, setActiveTab] = useState<'all' | 'today' | 'upcoming' | 'completed'>('all');
     const { tasks, loading, fetchTasks } = useTasks();
     const { isOnline, isSyncing } = useSync(); // Now using isOnline from useSync for real-time status
 
@@ -88,11 +88,13 @@ export const TaskListScreen = () => {
 
     const currentList = searchQuery
         ? filteredBySearch
-        : (activeTab === 'today'
-            ? todayTasks
-            : activeTab === 'upcoming'
-                ? upcomingTasks
-                : completedTasks);
+        : (activeTab === 'all'
+            ? tasks.filter(t => t.status !== 'completed')  // All pending tasks
+            : activeTab === 'today'
+                ? todayTasks
+                : activeTab === 'upcoming'
+                    ? upcomingTasks
+                    : completedTasks);
     // Loading is global now
     const isLoading = loading;
 
@@ -179,6 +181,12 @@ export const TaskListScreen = () => {
                 {!selectedFolder && !searchQuery && (
                     <div className="flex p-1 bg-gray-200 dark:bg-slate-800 rounded-xl mb-6">
                         <button
+                            onClick={() => setActiveTab('all')}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}`}
+                        >
+                            All
+                        </button>
+                        <button
                             onClick={() => setActiveTab('today')}
                             className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'today' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
                         >
@@ -192,9 +200,9 @@ export const TaskListScreen = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab('completed')}
-                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'completed' ? 'bg-white dark:bg-slate-700 shadow-sm text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}
+                            className={`flex-1 py-3 text-xs font-bold rounded-lg transition-all ${activeTab === 'completed' ? 'bg-white dark:bg-slate-700 shadow-sm text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}
                         >
-                            Completed
+                            Done
                         </button>
                     </div>
                 )}
