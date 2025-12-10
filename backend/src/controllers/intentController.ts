@@ -12,14 +12,11 @@ export const processIntent = async (req: Request, res: Response) => {
         // 1. Parse Intent
         const parsed = await parseIntent(text);
 
-        // 2. Identify User
-        const userId = 'mock-user-id';
-        // Ensure user exists (SQLite foreign key constraint)
-        await prisma.user.upsert({
-            where: { id: userId },
-            update: {},
-            create: { id: userId, isGuest: true }
-        });
+        // 2. Get authenticated User ID
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
 
         // 3. Create Task
         const task = await prisma.task.create({

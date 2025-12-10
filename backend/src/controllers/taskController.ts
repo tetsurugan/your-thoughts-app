@@ -7,7 +7,11 @@ const prisma = new PrismaClient();
 // GET /api/tasks?scope=today|overdue|upcoming
 export const getTasks = async (req: Request, res: Response) => {
     const { scope } = req.query;
-    const userId = 'mock-user-id'; // TODO: Auth
+    const userId = req.user?.userId;
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     try {
         const now = new Date();
@@ -172,7 +176,10 @@ export const toggleSubtask = async (req: Request, res: Response) => {
 
 // POST /api/tasks - Direct task creation (for demo mode and seeding)
 export const createTask = async (req: Request, res: Response) => {
-    const userId = (req as any).userId || 'mock-user-id';
+    const userId = req.user?.userId;
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     const { title, description, category, dueAt, isRecurring, recurrenceInterval, sourceType } = req.body;
 
     try {
@@ -198,7 +205,10 @@ export const createTask = async (req: Request, res: Response) => {
 // DELETE /api/tasks/:id - Delete a task
 export const deleteTask = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const userId = (req as any).userId || 'mock-user-id';
+    const userId = req.user?.userId;
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     try {
         // Verify task belongs to user

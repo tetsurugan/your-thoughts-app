@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 // GET /api/folders
 // List all folders for user (system + custom)
 export const getFolders = async (req: Request, res: Response) => {
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         // Ensure system folders exist
@@ -42,7 +43,8 @@ export const getFolders = async (req: Request, res: Response) => {
 // POST /api/folders
 // Create a custom folder
 export const createFolder = async (req: Request, res: Response) => {
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { name, icon, color } = req.body;
 
     if (!name || typeof name !== 'string') {
@@ -74,7 +76,8 @@ export const createFolder = async (req: Request, res: Response) => {
 // Delete a custom folder (not system folders)
 export const deleteFolder = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         const folder = await prisma.folder.findUnique({ where: { id } });
@@ -103,7 +106,8 @@ export const deleteFolder = async (req: Request, res: Response) => {
 // Get tasks in a specific folder
 export const getTasksInFolder = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         const folder = await prisma.folder.findUnique({
@@ -146,7 +150,8 @@ export const getTasksInFolder = async (req: Request, res: Response) => {
 export const assignTaskToFolders = async (req: Request, res: Response) => {
     const { taskId } = req.params;
     const { folderIds } = req.body;
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     if (!Array.isArray(folderIds)) {
         return res.status(400).json({ error: 'folderIds must be an array' });

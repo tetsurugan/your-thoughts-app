@@ -10,10 +10,9 @@ const prisma = new PrismaClient();
 // Init upload
 export const createDocument = async (req: Request, res: Response) => {
     try {
-        const { fileName, type, userId: reqUserId } = req.body;
-        // Mock User
-        const userId = 'mock-user-id';
-        await prisma.user.upsert({ where: { id: userId }, update: {}, create: { id: userId, isGuest: true } });
+        const { fileName, type } = req.body;
+        const userId = req.user?.userId;
+        if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
         // 1. Create DB Record (Document needs to exist in Prisma Schema?)
         // Wait, we need to check if Document model exists in schema.prisma!
@@ -60,9 +59,9 @@ export const createDocument = async (req: Request, res: Response) => {
 // POST /api/documents/:id/parse
 export const parseDocument = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { key, userId: reqUserId } = req.body;
-    // In a real app we'd look up the doc by ID to get the key. 
-    // For this mock without DB model yet, we accept key from client or assume standard path.
+    const { key } = req.body;
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         // 1. OCR
@@ -72,7 +71,6 @@ export const parseDocument = async (req: Request, res: Response) => {
         const parsed = await parseTextIntent(text);
 
         // 3. Create Task
-        const userId = 'mock-user-id';
         const task = await prisma.task.create({
             data: {
                 userId,

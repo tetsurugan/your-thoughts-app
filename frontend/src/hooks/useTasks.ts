@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useApi } from './useApi';
 import { offlineStorage } from '../services/offlineStorage';
 
@@ -24,6 +24,7 @@ export const useTasks = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isOfflineMode, setIsOfflineMode] = useState(false);
+    const [hasFetched, setHasFetched] = useState(false);
 
     const fetchTasks = useCallback(async () => {
         setLoading(true);
@@ -53,6 +54,14 @@ export const useTasks = () => {
             setLoading(false);
         }
     }, [api]);
+
+    // Auto-fetch tasks on mount
+    useEffect(() => {
+        if (!hasFetched) {
+            fetchTasks();
+            setHasFetched(true);
+        }
+    }, [hasFetched, fetchTasks]);
 
     return {
         tasks,

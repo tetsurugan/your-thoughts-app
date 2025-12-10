@@ -3,6 +3,15 @@ import { offlineStorage } from '../services/offlineStorage';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
+// Helper to get auth headers
+const getAuthHeaders = (): HeadersInit => {
+    const token = localStorage.getItem('auth_token');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+};
+
 export const useApi = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -10,7 +19,9 @@ export const useApi = () => {
     const getTasks = async (scope: string = 'today') => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/tasks?scope=${scope}`);
+            const res = await fetch(`${API_BASE}/api/tasks?scope=${scope}`, {
+                headers: getAuthHeaders()
+            });
             if (!res.ok) throw new Error('Failed to fetch tasks');
             return await res.json();
         } catch (err: any) {
@@ -26,7 +37,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/intent`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     text,
                     sourceType,
@@ -63,7 +74,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/tasks/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(updates)
             });
             if (!res.ok) throw new Error('Failed to update task');
@@ -94,7 +105,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/calendar/events`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ taskId })
             });
             if (!res.ok) {
@@ -115,6 +126,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/calendar/events/${taskId}`, {
                 method: 'DELETE',
+                headers: getAuthHeaders()
             });
             if (!res.ok) {
                 const errData = await res.json();
@@ -135,7 +147,7 @@ export const useApi = () => {
             // 1. Init Upload (Sign URL)
             const initRes = await fetch(`${API_BASE}/api/documents`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ fileName: file.name, type: file.type })
             });
             if (!initRes.ok) throw new Error('Failed to init upload');
@@ -156,7 +168,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/documents/${documentId}/parse`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ key })
             });
             if (!res.ok) throw new Error('Failed to parse document');
@@ -174,6 +186,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/tasks/${taskId}/breakdown`, {
                 method: 'POST',
+                headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Failed to break down task');
             return await res.json();
@@ -189,7 +202,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/subtasks/${subtaskId}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ done })
             });
             if (!res.ok) throw new Error('Failed to toggle subtask');
@@ -213,7 +226,7 @@ export const useApi = () => {
         try {
             const res = await fetch(`${API_BASE}/api/tasks`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(taskData)
             });
             if (!res.ok) throw new Error('Failed to create task');
@@ -228,7 +241,8 @@ export const useApi = () => {
     const deleteTask = async (taskId: string) => {
         try {
             const res = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: getAuthHeaders()
             });
             if (!res.ok) throw new Error('Failed to delete task');
             return true;

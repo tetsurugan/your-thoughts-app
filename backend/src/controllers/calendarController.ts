@@ -8,7 +8,8 @@ const prisma = new PrismaClient();
 // GET /api/calendar/status
 // Check if user has valid Google Calendar connection
 export const getStatus = async (req: Request, res: Response) => {
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
         const connection = await prisma.calendarConnection.findUnique({
             where: { userId }
@@ -44,16 +45,14 @@ export const googleCallback = async (req: Request, res: Response) => {
         const client = createOAuthClient();
         const { tokens } = await client.getToken(code);
 
-        // For this demo, we assume a single "mock-user-id" or the first user in DB
-        // In prod, you'd store state in the connect call to know which user this is
-        const userId = 'mock-user-id';
-
-        // Ensure user exists (if not already upserted by intent)
-        await prisma.user.upsert({
-            where: { id: userId },
-            update: {},
-            create: { id: userId, isGuest: true }
-        });
+        // Get userId from state parameter or session
+        // For now, we need to get it from a stored state - this is a known OAuth flow limitation
+        // In production, use state parameter to track which user initiated the flow
+        const userId = req.user?.userId;
+        if (!userId) {
+            // Redirect to frontend with error if no auth
+            return res.redirect('/settings?error=auth_required');
+        }
 
         const expiresAt = new Date();
         if (tokens.expiry_date) {
@@ -99,7 +98,8 @@ export const googleCallback = async (req: Request, res: Response) => {
 // Creates an event from a task
 export const createEvent = async (req: Request, res: Response) => {
     const { taskId } = req.body;
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         // 1. Fetch Task
@@ -127,7 +127,8 @@ export const createEvent = async (req: Request, res: Response) => {
 // Deletes an event from Google Calendar
 export const deleteEvent = async (req: Request, res: Response) => {
     const { taskId } = req.params;
-    const userId = 'mock-user-id'; // Auth placeholder
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         // 1. Fetch Task
