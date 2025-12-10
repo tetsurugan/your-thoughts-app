@@ -230,9 +230,14 @@
 
 ---
 
-## Next: Behavioral (Mary)
+## Completed Agent Reviews
 
-After backlog creation, run **Mary (Behavioral)** to refine:
-- Legal Mode copy and tone
-- Supportive micro-interactions
-- Error message compassion
+All agent reviews for MVP are complete:
+- ✅ **Analyst (Ash)** - Problem definition, model alignment
+- ✅ **Architect (Winston)** - System structure, schema, data flows  
+- ✅ **PM (John)** - Feature matrix, phases, roadmap
+- ✅ **Behavioral (Mary)** - Legal Mode copy and tone
+- ✅ **UX Designer (Vera)** - Layout, spacing, visual polish
+- ✅ **QA (Miles)** - Test matrix, validation
+- ✅ **DevOps (Eli)** - Deployment configs, CI/CD
+

@@ -2,7 +2,7 @@
 
 > **A multimodal task capture PWA** — Say it, type it, or snap it. I'll turn it into tasks and calendar reminders.
 
-[![CI/CD](https://github.com/your-repo/your-thoughts-app/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/your-repo/your-thoughts-app/actions)
+[![CI/CD](https://github.com/tetsurugan/your-thoughts-app/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tetsurugan/your-thoughts-app/actions)
 
 ---
 
@@ -77,7 +77,7 @@ your-thoughts-app/
 
 ```bash
 # 1. Clone
-git clone https://github.com/your-repo/your-thoughts-app.git
+git clone https://github.com/tetsurugan/your-thoughts-app.git
 cd your-thoughts-app
 
 # 2. Backend setup
@@ -130,6 +130,7 @@ docker-compose up
 | Document | Purpose |
 |----------|---------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical decisions & data model |
+| [docs/API.md](./docs/API.md) | API endpoint reference |
 | [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Production deployment guide |
 | [docs/PHASE2_BACKLOG.md](./docs/PHASE2_BACKLOG.md) | Phase 2 feature epics |
 
