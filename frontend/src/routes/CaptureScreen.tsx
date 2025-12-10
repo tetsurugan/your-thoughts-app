@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useApi } from '../hooks/useApi';
 import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import { Mic, Camera, PenTool, X, CheckCircle2, AlertTriangle, Settings } from 'lucide-react';
 import { LargeActionButton } from '../components/LargeActionButton';
 import { LoadingMessage } from '../components/LoadingMessage';
@@ -12,6 +13,7 @@ import { TaskCard } from '../components/TaskCard';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { ERROR_MESSAGES } from '../utils/messages';
 
 type CaptureView = 'home' | 'text' | 'voice' | 'camera_preview' | 'ocr_result' | 'success' | 'loading';
 
@@ -23,6 +25,7 @@ export const CaptureScreen = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { user } = useAuth();
     const api = useApi();
+    const { showToast } = useToast();
 
     const { tasks } = useTasks();
 
@@ -46,7 +49,8 @@ export const CaptureScreen = () => {
     const handleVoiceStart = () => {
         // Check for basic support (doesn't guarantee permission, but filters out completely unsupported)
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            return alert("Voice input not supported on this browser. Try Chrome or Safari.");
+            showToast(ERROR_MESSAGES.VOICE_NOT_SUPPORTED, 'error');
+            return;
         }
         setText('');
         setView('voice');
@@ -70,7 +74,7 @@ export const CaptureScreen = () => {
             setView('ocr_result');
         } catch (err) {
             console.error(err);
-            alert("Could not read document.");
+            showToast(ERROR_MESSAGES.OCR_FAILED, 'error');
             setView('home');
         } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -95,7 +99,7 @@ export const CaptureScreen = () => {
             handleSuccess();
         } catch (err) {
             console.error(err);
-            alert("Error saving task.");
+            showToast(ERROR_MESSAGES.TASK_CREATE_FAILED, 'error');
             setView('text');
         }
     };

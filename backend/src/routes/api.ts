@@ -21,7 +21,9 @@ router.delete('/auth/account', authenticateToken, authController.deleteAccount);
 
 // Tasks (Protected)
 router.get('/tasks', authenticateToken, taskController.getTasks);
+router.post('/tasks', authenticateToken, taskController.createTask);
 router.patch('/tasks/:id', authenticateToken, taskController.updateTask);
+router.delete('/tasks/:id', authenticateToken, taskController.deleteTask);
 router.post('/tasks/:id/breakdown', authenticateToken, taskController.generateBreakdown);
 router.patch('/subtasks/:id', authenticateToken, taskController.toggleSubtask);
 

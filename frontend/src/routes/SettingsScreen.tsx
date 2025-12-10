@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
-import { Calendar, CheckCircle2, LogOut, User, Smartphone, Bell, Tags } from 'lucide-react';
+import { useDemoMode } from '../hooks/useDemoMode';
+import { Calendar, CheckCircle2, LogOut, User, Smartphone, Bell, Tags, RefreshCcw, AlertTriangle } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { TagManager } from '../components/TagManager';
 
@@ -56,6 +57,41 @@ const NotificationsSection = () => {
                 </div>
             )}
         </div>
+    );
+};
+
+const DemoModeSection = () => {
+    const { isDemo, isSeeding, resetDemoData, seedDemoData } = useDemoMode();
+
+    // Seed demo data on first load if in demo mode
+    useEffect(() => {
+        if (isDemo) {
+            seedDemoData();
+        }
+    }, [isDemo, seedDemoData]);
+
+    if (!isDemo) return null;
+
+    return (
+        <section className="mb-6">
+            <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-3 ml-1 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Demo Mode
+            </h2>
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-4 shadow-sm">
+                <p className="text-sm text-amber-800 dark:text-amber-200 mb-4">
+                    Demo mode is active. Sample legal tasks have been created for demonstration.
+                </p>
+                <button
+                    onClick={resetDemoData}
+                    disabled={isSeeding}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-bold hover:bg-amber-600 transition-colors disabled:opacity-50"
+                >
+                    <RefreshCcw className={`w-4 h-4 ${isSeeding ? 'animate-spin' : ''}`} />
+                    {isSeeding ? 'Resetting...' : 'Reset Demo Data'}
+                </button>
+            </div>
+        </section>
     );
 };
 
@@ -172,6 +208,9 @@ export const SettingsScreen = () => {
                         <ThemeToggle />
                     </div>
                 </section>
+
+                {/* Demo Mode (if active) */}
+                <DemoModeSection />
 
                 {/* App Info */}
                 <section className="mb-8">

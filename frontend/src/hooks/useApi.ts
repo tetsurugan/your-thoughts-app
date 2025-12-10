@@ -200,12 +200,52 @@ export const useApi = () => {
         }
     };
 
+    // Direct task creation (bypasses AI intent parsing) - used for demo seeding
+    const createTaskDirect = async (taskData: {
+        title: string;
+        description?: string;
+        category: string;
+        dueAt?: string;
+        isRecurring?: boolean;
+        recurrenceInterval?: string;
+        sourceType?: string;
+    }) => {
+        try {
+            const res = await fetch(`${API_BASE}/api/tasks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(taskData)
+            });
+            if (!res.ok) throw new Error('Failed to create task');
+            return await res.json();
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    // Delete task
+    const deleteTask = async (taskId: string) => {
+        try {
+            const res = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Failed to delete task');
+            return true;
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
     return {
         loading,
         error,
         getTasks,
         createTaskFromIntent,
         updateTask,
+        createTaskDirect,
+        deleteTask,
         connectGoogleCalendar,
         addTaskToCalendar,
         removeTaskFromCalendar,

@@ -3,11 +3,15 @@ import { useTasks } from '../hooks/useTasks';
 import { useFolders } from '../hooks/useFolders';
 import { useApi } from '../hooks/useApi';
 import { useSync } from '../hooks/useSync';
+import { useToast } from '../components/Toast';
 import { TaskCard } from '../components/TaskCard';
 import { ActionableTaskCard } from '../components/ActionableTaskCard';
 import { FolderTabs } from '../components/FolderTabs';
+import { DemoBadge } from '../components/DemoBadge';
 import { AlertCircle, Calendar, CalendarDays, FileDown } from 'lucide-react';
 import { exportTasksToPDF } from '../utils/exportToPDF';
+import { isDemoMode } from '../utils/demoMode';
+import { SUCCESS_MESSAGES } from '../utils/messages';
 
 export const TaskListScreen = () => {
     const [activeTab, setActiveTab] = useState<'today' | 'upcoming'>('today');
@@ -40,6 +44,7 @@ export const TaskListScreen = () => {
 
     const { folders, selectedFolder, setSelectedFolder } = useFolders();
     const api = useApi();
+    const { showToast } = useToast();
 
     const handleToggle = async (id: string) => {
         const t = tasks.find(x => x.id === id);
@@ -49,6 +54,10 @@ export const TaskListScreen = () => {
 
         try {
             await api.updateTask(id, { status: newStatus });
+            // Show completion toast if completing
+            if (newStatus === 'completed') {
+                showToast(SUCCESS_MESSAGES.TASK_COMPLETED, 'success');
+            }
             // For offline mode, the manual fetchTasks might not see the change if backend didn't update.
             // But since we are likely just queuing, we depend on the queue or optimistic state.
             // For MVP, just refetch. If offline, it might not change IDB yet unless we update IDB optimistically.
@@ -104,7 +113,10 @@ export const TaskListScreen = () => {
                 )}
 
                 <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">My Tasks</h1>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">My Tasks</h1>
+                        {isDemoMode() && <DemoBadge />}
+                    </div>
                     <button
                         onClick={handleExportPDF}
                         className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"

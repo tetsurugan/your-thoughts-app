@@ -169,3 +169,57 @@ export const toggleSubtask = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to update subtask' });
     }
 };
+
+// POST /api/tasks - Direct task creation (for demo mode and seeding)
+export const createTask = async (req: Request, res: Response) => {
+    const userId = (req as any).userId || 'mock-user-id';
+    const { title, description, category, dueAt, isRecurring, recurrenceInterval, sourceType } = req.body;
+
+    try {
+        const task = await prisma.task.create({
+            data: {
+                userId,
+                title,
+                description,
+                category: category || 'general',
+                dueAt: dueAt ? new Date(dueAt) : null,
+                isRecurring: isRecurring || false,
+                recurrenceInterval: recurrenceInterval || null,
+                status: 'pending'
+            }
+        });
+        res.json(task);
+    } catch (error) {
+        console.error('Create Task Error:', error);
+        res.status(500).json({ error: 'Failed to create task' });
+    }
+};
+
+// DELETE /api/tasks/:id - Delete a task
+export const deleteTask = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = (req as any).userId || 'mock-user-id';
+
+    try {
+        // Verify task belongs to user
+        const task = await prisma.task.findFirst({
+            where: { id, userId }
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Delete subtasks first
+        await prisma.subtask.deleteMany({ where: { taskId: id } });
+
+        // Delete task
+        await prisma.task.delete({ where: { id } });
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Delete Task Error:', error);
+        res.status(500).json({ error: 'Failed to delete task' });
+    }
+};
+
