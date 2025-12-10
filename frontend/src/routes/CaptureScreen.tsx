@@ -27,7 +27,7 @@ export const CaptureScreen = () => {
     const api = useApi();
     const { showToast } = useToast();
 
-    const { tasks } = useTasks();
+    const { tasks, fetchTasks } = useTasks();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -109,6 +109,8 @@ export const CaptureScreen = () => {
         setText('');
         setRecurrenceInterval(null);
         setOcrResult(null);
+        // Refresh task list after creating a task
+        fetchTasks();
         setTimeout(() => setView('home'), 2500);
     };
 
