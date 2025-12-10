@@ -1,86 +1,136 @@
-# Architecture Documentation - Your Thoughts App
+# Architecture v2 Documentation
 
-This document outlines the technical architecture, component structure, and data flow of the "Your Thoughts" application.
+## Overview
 
-## High-Level Architecture
+**Your Thoughts** is a multimodal task capture PWA with 4 user personas: Legal, School, Work, Custom.
 
-The app is a **Client-Side Single Page Application (SPA)** built with React and Vite. 
-It follows a **Context-based state management** pattern where data is held in React Context Providers and persisted synchronously to the browser's `localStorage`.
+---
 
-There is **no external database** for this MVP. All data resides in the user's browser.
-
-## Component Structure
-
-### Core Components (`src/components/`)
-*   **Layout.tsx**: The main shell. Wraps pages with a consistent container and the `BottomNav`. Enforces the mobile-first (max-width) layout.
-*   **BottomNav.tsx**: The primary navigation bar (Tasks | New Note | Profile).
-*   **TaskCard.tsx**: The complex display unit for a task. Handles:
-    *   Displaying title/desc/date.
-    *   Badges (Category, Source).
-    *   Urgency styling (Red/Yellow borders).
-    *   Expansion logic for Subtasks.
-*   **ProtectedRoute.tsx**: High-order component that checks `AuthContext`. Redirects unauthenticated users to `/login`.
-
-### Pages (`src/pages/`)
-*   **TaskList.tsx**: The main dashboard.
-    *   **Logic**: Fetches tasks from `TaskContext`.
-    *   **Sorting**: Sorts by Urgency (Overdue > Due Soon > Date > Creation).
-    *   **Filtering**: Toggles between Active and Completed.
-*   **NewNote.tsx**: The capture screen.
-    *   **Logic**: Handles form input, validation, and simulated ambiguity checks ("Did you mean...?").
-    *   **Integration**: Calls `parseTask` from `src/lib/taskParser.ts` before saving.
-*   **Profile.tsx**: Simple user info display and Logout trigger.
-*   **Login.tsx / Signup.tsx / ForgotPassword.tsx**: Authentication forms.
-
-## Data Flow: Note to Task
-
-The core unique logic of the app is how a "Note" becomes a "Task".
-
-1.  **Input**: User enters text in `NewNote.tsx` (typed or simulated voice/photo).
-2.  **Validation**: 
-    *   Checks for empty input.
-    *   Checks for ambiguity trigger words (e.g., "book" prompts a dialog).
-3.  **Parsing (`src/lib/taskParser.ts`)**:
-    *   The raw text is passed to `parseTask(text)`.
-    *   **Category**: Regex checks for keywords (court -> Legal, doctor -> Appointment).
-    *   **Subtasks**: Regex checks for process words (sign up -> [create account, verify, ...]).
-4.  **Creation**:
-    *   A new `Task` object is created with the generated metadata.
-    *   `addTask` in `TaskContext` saves it to state and `localStorage`.
-
-## State Management (`src/context/`)
-
-### AuthContext
-*   **State**: `user` object (id, name, email).
-*   **Persistence**: Key `clarity_user` in `localStorage`.
-*   **Methods**: `login`, `signup`, `logout`, `forgotPassword`.
-
-### TaskContext
-*   **State**: Array of `Task` objects.
-*   **Persistence**: Key `clarity_tasks` in `localStorage` (mapped by userId).
-*   **Methods**: `addTask`, `updateTask`, `deleteTask`, `toggleTaskCompletion`, `toggleSubtaskCompletion`.
-
-## Future Extension Points
-
-### 1. Smart Folder Browsing
-*   **Current State**: Tasks have a `category` field ('Legal', 'Probation', etc.) but are only shown in a single list.
-*   **Extension**: Create a new page `FolderView.tsx` that groups tasks by `task.category`.
-
-### 2. Calendar View
-*   **Current State**: Tasks have a `dueDate` string (YYYY-MM-DD).
-*   **Extension**: Add a library like `react-calendar`. Map dates to task lists.
-
-### 3. Real Backend
-*   **Current State**: `src/lib/storage.ts` wraps `localStorage`.
-*   **Extension**: specific implementations of `auth` and `storage` can be swapped out for Supabase/Firebase clients without changing the UI components significantly.
-
-## Directory Map
+## System Architecture
 
 ```
-src/
-├── components/       # Reusable UI parts
-├── context/          # React Context (State)
-├── lib/              # Logic helpers (Storage, Parser)
-├── pages/            # Route views
-└── App.tsx           # Router configuration
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT (Browser/PWA)                     │
+├─────────────────────────────────────────────────────────────────┤
+│  React 18 + TypeScript + Vite + TailwindCSS                     │
+│  ├── Capture Screen (text, voice, camera)                       │
+│  ├── Task List (Today, Upcoming, Smart Folders)                 │
+│  ├── Settings (tags, purpose, integrations)                     │
+│  ├── Offline Storage (IndexedDB)                                │
+│  └── Sync Queue (useSync + offlineStorage)                      │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        BACKEND (API)                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Node.js + Express + TypeScript + Prisma ORM                    │
+│  ├── Auth Service (JWT, bcrypt, accountPurpose)                 │
+│  ├── Task Service (CRUD, recurrence series)                     │
+│  ├── AI Service (Gemini: intent, breakdown, OCR)                │
+│  ├── Tag Service (purpose-based defaults)                       │
+│  ├── Calendar Service (Google Calendar one-way)                 │
+│  └── Notification Service (Web Push)                            │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      EXTERNAL SERVICES                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Google Gemini API (text + image processing)                    │
+│  Google Calendar API (OAuth2)                                   │
+│  Web Push (VAPID keys)                                          │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Key Architecture Decisions (v2)
+
+### 1. Category vs Purpose Model
+- **Task.category** = per-task classification (string, AI-detected)
+- **User.accountPurpose** = user-level context (legal/school/work/custom)
+- Purpose influences AI classification bias via `CATEGORY_PRESETS_BY_PURPOSE`
+- See: `/backend/src/config/categoryPresets.ts`
+
+### 2. Recurrence Series
+- **recurrenceSeriesId** links all tasks in a recurring series
+- Next instance generated **server-side only** when completing a task
+- Duplicate prevention via date range check
+- See: `/backend/src/controllers/taskController.ts`
+
+### 3. Offline Queue (Client-Only)
+- OfflineQueue is **NOT** a Prisma model
+- Stored in IndexedDB via `offlineStorage.ts`
+- Processed by `useSync.ts` when back online
+- Server is stateless regarding offline mutations
+
+### 4. Calendar Integration (One-Way Push)
+- MVP supports one-way push only
+- `POST /api/calendar/events` → Creates Google Calendar event
+- `DELETE /api/calendar/events/:taskId` → Removes event
+- Edits/deletions in Google Calendar are NOT mirrored back
+- Two-way sync is a future enhancement
+
+### 5. OCR Pipeline (Demo Mode)
+- Uses Gemini image-to-text API (simulated OCR)
+- No dedicated OCR service (AWS Textract/Google Vision) yet
+- See: `/backend/src/controllers/documentController.ts`
+
+### 6. Voice Recognition
+- Uses Web Speech API (browser-native)
+- Works best on Chrome (Android/Desktop)
+- Safari iOS has limitations
+- Server-side fallback is a future enhancement
+
+### 7. Guest Mode
+- Full feature access (same as registered users)
+- JWT valid for 7 days
+- Data may be pruned in future (lower guarantee)
+- "Convert to full account" CTA planned
+
+---
+
+## Data Model Summary
+
+| Model | Key Fields | Notes |
+|-------|-----------|-------|
+| User | id, email?, accountPurpose, isGuest | Purpose drives defaults |
+| Task | id, userId, category, recurrenceSeriesId | Series links recurring |
+| Tag | id, userId, name, color | User-defined labels |
+| Subtask | id, taskId, label, done | AI-generated breakdown |
+| CalendarConnection | userId, accessToken | Google OAuth tokens |
+
+---
+
+## Service Boundaries
+
+| Service | Routes | Concern |
+|---------|--------|---------|
+| Auth | /api/auth/* | JWT, signup, guest |
+| Task | /api/tasks/*, /api/intent | CRUD, recurrence |
+| Tag | /api/tags/* | User tags |
+| Calendar | /api/calendar/* | Google sync |
+| Notification | /api/notifications/* | Push subscriptions |
+
+---
+
+## Frontend Hooks
+
+| Hook | Purpose |
+|------|---------|
+| useApi | Central fetch wrapper with auth |
+| useTasks | Task list with scopes |
+| useSync | Offline queue processor |
+| useAuth | User + accountPurpose |
+| useFolders | Smart folder management |
+
+---
+
+## Future Enhancements
+
+- [ ] Two-way calendar sync
+- [ ] Server-side voice processing (Whisper-style)
+- [ ] Real OCR service (AWS Textract)
+- [ ] Guest → Full account conversion flow
+- [ ] Multi-device conflict resolution

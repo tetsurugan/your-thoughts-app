@@ -1,0 +1,35 @@
+# Render Blueprint for Backend
+# https://docs.render.com/blueprint-spec
+
+services:
+  - type: web
+    name: your-thoughts-api
+    runtime: node
+    region: oregon
+    plan: free  # Upgrade to starter for production
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: your-thoughts-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false  # Set manually
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false  # Set to your Vercel URL
+
+databases:
+  - name: your-thoughts-db
+    databaseName: yourthoughts
+    plan: free  # Free tier: 256 MB, auto-suspend after 15 min
+    region: oregon

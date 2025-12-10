@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* UI Designer Spec Palette */
+  --color-primary-blue: #1E3A8A;
+  --color-secondary-blue: #3B82F6;
+  --color-success-green: #22C55E;
+  --color-warning-orange: #F59E0B;
+  --color-danger-red: #DC2626;
+  /* Overdue only */
+  --color-neutral-gray: #6B7280;
+  --color-bg-light: #F3F4F6;
+  /* Light Gray Background */
+  --color-white: #FFFFFF;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    background-color: var(--color-bg-light);
+    color: #1F2937;
+    /* Gray-900 for high contrast text */
+  }
+
+  body {
+    @apply antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Typography Base match Spec */
+.text-header-xl {
+  @apply text-xl font-bold text-slate-900;
+}
+
+.text-section-lg {
+  @apply text-lg font-semibold text-slate-800;
+}
+
+.text-body-base {
+  @apply text-base leading-snug text-slate-700;
+}
+
+/* Utility */
+
+.pb-safe-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
