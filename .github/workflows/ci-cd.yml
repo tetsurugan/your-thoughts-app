@@ -69,11 +69,12 @@ jobs:
         run: npm run build
 
   # ============ DEPLOY STAGING ============
+  # NOTE: Disabled until deployment secrets are configured
   deploy-staging:
     name: Deploy to Staging
     needs: [backend-test, frontend-test]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging'
+    if: false  # Disabled - enable when RENDER and VERCEL secrets are configured
     
     steps:
       - uses: actions/checkout@v4
@@ -94,11 +95,12 @@ jobs:
           alias-domains: staging.yourthoughts.app
 
   # ============ DEPLOY PRODUCTION ============
+  # NOTE: Disabled until deployment secrets are configured
   deploy-production:
     name: Deploy to Production
     needs: [backend-test, frontend-test]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: false  # Disabled - enable when RENDER and VERCEL secrets are configured
     environment: production
     
     steps:
@@ -119,3 +121,4 @@ jobs:
           working-directory: frontend
           vercel-args: '--prod'
           alias-domains: yourthoughts.app
+
