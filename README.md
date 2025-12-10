@@ -132,6 +132,7 @@ docker-compose up
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical decisions & data model |
 | [docs/API.md](./docs/API.md) | API endpoint reference |
 | [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Production deployment guide |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | Project roadmap & features |
 | [docs/PHASE2_BACKLOG.md](./docs/PHASE2_BACKLOG.md) | Phase 2 feature epics |
 
 ---
