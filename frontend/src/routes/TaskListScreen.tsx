@@ -14,7 +14,7 @@ import { isDemoMode } from '../utils/demoMode';
 import { SUCCESS_MESSAGES } from '../utils/messages';
 
 export const TaskListScreen = () => {
-    const [activeTab, setActiveTab] = useState<'today' | 'upcoming'>('today');
+    const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'completed'>('today');
     const { tasks, loading, fetchTasks } = useTasks();
     const { isOnline, isSyncing } = useSync(); // Now using isOnline from useSync for real-time status
 
@@ -41,6 +41,9 @@ export const TaskListScreen = () => {
         d.setHours(0, 0, 0, 0);
         return d.getTime() > today.getTime();
     });
+
+    // Completed tasks filter
+    const completedTasks = tasks.filter(t => t.status === 'completed');
 
     const { folders, selectedFolder, setSelectedFolder } = useFolders();
     const api = useApi();
@@ -83,7 +86,13 @@ export const TaskListScreen = () => {
         return t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q);
     });
 
-    const currentList = searchQuery ? filteredBySearch : (activeTab === 'today' ? todayTasks : upcomingTasks);
+    const currentList = searchQuery
+        ? filteredBySearch
+        : (activeTab === 'today'
+            ? todayTasks
+            : activeTab === 'upcoming'
+                ? upcomingTasks
+                : completedTasks);
     // Loading is global now
     const isLoading = loading;
 
@@ -171,15 +180,21 @@ export const TaskListScreen = () => {
                     <div className="flex p-1 bg-gray-200 dark:bg-slate-800 rounded-xl mb-6">
                         <button
                             onClick={() => setActiveTab('today')}
-                            className={`flex-1 py-3 text-base font-bold rounded-lg transition-all ${activeTab === 'today' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'today' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
                         >
                             Today
                         </button>
                         <button
                             onClick={() => setActiveTab('upcoming')}
-                            className={`flex-1 py-3 text-base font-bold rounded-lg transition-all ${activeTab === 'upcoming' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'upcoming' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}
                         >
                             Upcoming
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('completed')}
+                            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeTab === 'completed' ? 'bg-white dark:bg-slate-700 shadow-sm text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}
+                        >
+                            Completed
                         </button>
                     </div>
                 )}

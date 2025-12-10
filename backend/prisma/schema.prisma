@@ -1,5 +1,3 @@
-// This is your Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,20 +8,19 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  email          String?  @unique
-  password       String?
-  name           String?
-  isGuest        Boolean  @default(false)
-  accountPurpose String?  // 'legal', 'school', 'work', 'custom'
-  createdAt      DateTime @default(now())
-
-  tasks              Task[]
+  id                 String              @id @default(uuid())
+  isGuest            Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  email              String?             @unique
+  name               String?
+  password           String?
+  accountPurpose     String?
+  calendarConnection CalendarConnection?
   documents          Document[]
   folders            Folder[]
-  tags               Tag[]
   pushSubscription   PushSubscription[]
-  calendarConnection CalendarConnection?
+  tags               Tag[]
+  tasks              Task[]
 }
 
 model PushSubscription {
@@ -33,9 +30,8 @@ model PushSubscription {
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   @@unique([userId, endpoint])
 }
 
@@ -51,15 +47,14 @@ model Task {
   googleEventId         String?
   requiresClarification Boolean      @default(false)
   isRecurring           Boolean      @default(false)
-  recurrenceInterval    String?      // 'daily', 'weekly', 'monthly', 'yearly'
-  recurrenceSeriesId    String?      // Links all tasks in a recurring series
+  recurrenceInterval    String?
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
-
-  user     User         @relation(fields: [userId], references: [id])
-  subtasks Subtask[]
-  folders  TaskFolder[]
-  taskTags TaskTag[]
+  recurrenceSeriesId    String?
+  subtasks              Subtask[]
+  user                  User         @relation(fields: [userId], references: [id])
+  folders               TaskFolder[]
+  taskTags              TaskTag[]
 }
 
 model Subtask {
@@ -68,8 +63,7 @@ model Subtask {
   label      String
   done       Boolean @default(false)
   orderIndex Int     @default(0)
-
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task       Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 model Folder {
@@ -80,21 +74,19 @@ model Folder {
   isSystem  Boolean      @default(false)
   userId    String
   createdAt DateTime     @default(now())
-
-  user  User         @relation(fields: [userId], references: [id])
-  tasks TaskFolder[]
+  user      User         @relation(fields: [userId], references: [id])
+  tasks     TaskFolder[]
 
   @@unique([userId, name])
 }
 
 model TaskFolder {
-  id         String  @id @default(uuid())
+  id         String @id @default(uuid())
   taskId     String
   folderId   String
-  confidence Float   @default(1.0)
-
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  confidence Float  @default(1.0)
+  folder     Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  task       Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@unique([taskId, folderId])
 }
@@ -102,33 +94,30 @@ model TaskFolder {
 model CalendarConnection {
   id           String   @id @default(uuid())
   userId       String   @unique
-  provider     String   @default("google") // enum 'google'
+  provider     String   @default("google")
   accessToken  String
   refreshToken String
   expiresAt    DateTime
-
-  user User @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model Document {
-  id        String   @id @default(uuid())
-  userId    String
-  type      String   @default("generic")
+  id         String   @id @default(uuid())
+  userId     String
+  type       String   @default("generic")
   storageUrl String
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Tag {
   id        String    @id @default(uuid())
   name      String
-  color     String?   // hex color for UI
+  color     String?
   userId    String
   createdAt DateTime  @default(now())
-
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  taskTags TaskTag[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskTags  TaskTag[]
 
   @@unique([userId, name])
 }
@@ -137,9 +126,8 @@ model TaskTag {
   id     String @id @default(uuid())
   taskId String
   tagId  String
-
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@unique([taskId, tagId])
 }
