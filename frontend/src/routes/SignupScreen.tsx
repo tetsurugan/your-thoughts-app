@@ -12,7 +12,7 @@ const PURPOSE_OPTIONS = [
 ];
 
 export const SignupScreen = () => {
-    const { signup } = useAuth();
+    const { signup, loginAsGuest } = useAuth();
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -31,6 +31,17 @@ export const SignupScreen = () => {
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGuestLogin = async () => {
+        setLoading(true);
+        try {
+            await loginAsGuest();
+            navigate('/capture');
+        } catch (err: any) {
+            setError(err.message || 'Failed to continue as guest');
             setLoading(false);
         }
     };
@@ -117,10 +128,30 @@ export const SignupScreen = () => {
                         disabled={loading}
                         className="w-full justify-center text-lg py-3"
                     >
-                        {loading ? 'Creating account...' : 'Create Account'}
+                        {loading ? 'Creating account...' : 'Sign up'}
                         <ArrowRight className="w-5 h-5 ml-2" />
                     </PrimaryButton>
                 </form>
+
+                {/* Divider */}
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200 dark:border-slate-700"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-slate-50 dark:bg-slate-950 text-gray-500">Or</span>
+                    </div>
+                </div>
+
+                {/* Guest Button */}
+                <button
+                    onClick={handleGuestLogin}
+                    type="button"
+                    disabled={loading}
+                    className="w-full py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 font-bold hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600 transition-all shadow-sm active:scale-[0.98]"
+                >
+                    Continue as Guest
+                </button>
 
                 <div className="text-center">
                     <p className="text-sm text-gray-500 dark:text-slate-400">
@@ -134,3 +165,4 @@ export const SignupScreen = () => {
         </div>
     );
 };
+
