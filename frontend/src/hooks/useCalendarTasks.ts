@@ -17,7 +17,7 @@ interface DayTasks {
  * Hook for organizing tasks by calendar dates
  */
 export function useCalendarTasks() {
-    const { tasks, loading, error, refetch } = useTasks('all');
+    const { tasks, loading, error, fetchTasks } = useTasks();
 
     // Get all tasks that have a due date
     const tasksWithDueDate = useMemo(() => {
@@ -87,7 +87,7 @@ export function useCalendarTasks() {
         tasksByDate,
         loading,
         error,
-        refetch,
+        refetch: fetchTasks,
         getTasksForDate,
         getDaysWithTasks,
         hasOverdueTasks
