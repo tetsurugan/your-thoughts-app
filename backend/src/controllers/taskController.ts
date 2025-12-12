@@ -48,9 +48,10 @@ export const getTasks = async (req: Request, res: Response) => {
         const tasks = await prisma.task.findMany({
             where: whereClause,
             include: { subtasks: true },
-            orderBy: { dueAt: 'asc' }
+            orderBy: { createdAt: 'desc' }
         });
 
+        console.log(`[getTasks] User ${userId} fetched ${tasks.length} tasks`);
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -84,6 +85,8 @@ export const updateTask = async (req: Request, res: Response) => {
             const currentDue = task.dueAt || new Date();
             let nextDue = new Date(currentDue);
 
+            console.log('[Recurrence] Completing task:', { id, currentDue: currentDue.toISOString(), interval: task.recurrenceInterval });
+
             switch (task.recurrenceInterval) {
                 case 'daily':
                     nextDue.setDate(nextDue.getDate() + 1);
@@ -98,6 +101,8 @@ export const updateTask = async (req: Request, res: Response) => {
                     nextDue.setFullYear(nextDue.getFullYear() + 1);
                     break;
             }
+
+            console.log('[Recurrence] Next due date calculated:', nextDue.toISOString());
 
             // DUPLICATE PREVENTION: Check if next instance already exists
             const existingNext = await prisma.task.findFirst({

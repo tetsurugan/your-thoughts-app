@@ -30,15 +30,19 @@ export const useTasks = () => {
         setLoading(true);
         setError(null);
         try {
+            console.log('Fetching tasks...');
             const data = await api.getTasks();
+            console.log('Tasks fetched:', data.length, data);
             setTasks(data);
             setIsOfflineMode(false);
             // Cache tasks for offline use
             await offlineStorage.saveTasks(data);
         } catch (err: any) {
+            console.log('Fetch failed, checking offline cache...');
             console.warn('Failed to fetch tasks, trying offline cache:', err);
             try {
                 const cached = await offlineStorage.getCachedTasks();
+                console.log('Offline tasks loaded:', cached.length);
                 if (cached.length > 0) {
                     setTasks(cached as Task[]);
                     setIsOfflineMode(true);

@@ -3,22 +3,43 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { seedDefaultTags } from './tagController';
+import { ensureSystemFolders } from '../services/aiClassifierService';
+import { seedDemoTasks } from '../services/demoSeedingService';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-me';
 
 export const loginAsGuest = async (req: Request, res: Response) => {
     try {
+        console.log('[Auth] loginAsGuest called with body:', JSON.stringify(req.body));
+        // Accept optional accountPurpose for demo mode
+        const { accountPurpose } = req.body || {};
+
         const user = await prisma.user.create({
             data: {
                 name: 'Guest',
-                isGuest: true
+                isGuest: true,
+                accountPurpose: accountPurpose || null
             }
         });
 
+        // If accountPurpose provided (demo mode), seed tags and folders AND tasks
+        if (accountPurpose) {
+            console.log(`[DemoMode] Guest login with accountPurpose='${accountPurpose}'`);
+
+            // Wait for all seeding to complete before returning
+            await Promise.all([
+                seedDefaultTags(user.id, accountPurpose),
+                ensureSystemFolders(user.id, accountPurpose),
+                seedDemoTasks(user.id, accountPurpose)
+            ]);
+
+            console.log(`[DemoMode] All data seeded for user ${user.id}`);
+        }
+
         const token = jwt.sign({ userId: user.id /* no email */ }, JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ token, user: { id: user.id, name: user.name, email: null, isGuest: true } });
+        res.json({ token, user: { id: user.id, name: user.name, email: null, isGuest: true, accountPurpose: user.accountPurpose } });
     } catch (error) {
         console.error('Guest login error:', error);
         res.status(500).json({ error: 'Guest login failed' });
@@ -50,6 +71,9 @@ export const signup = async (req: Request, res: Response) => {
         if (accountPurpose) {
             await seedDefaultTags(user.id, accountPurpose);
         }
+
+        // Seed purpose-specific folders
+        await ensureSystemFolders(user.id, accountPurpose || 'custom');
 
         const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
@@ -150,6 +174,38 @@ export const deleteAccount = async (req: Request, res: Response) => {
         await prisma.user.delete({ where: { id: userId } });
         res.sendStatus(204);
     } catch (error) {
+        console.error('Delete User Error:', error);
         res.status(500).json({ error: 'Failed to delete account' });
+    }
+};
+
+// PATCH /api/auth/purpose - Set account purpose and seed folders/tags (for demo mode)
+export const setAccountPurpose = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+        const { accountPurpose } = req.body;
+
+        if (!accountPurpose) {
+            return res.status(400).json({ error: 'accountPurpose is required' });
+        }
+
+        // Update user's account purpose
+        await prisma.user.update({
+            where: { id: userId },
+            data: { accountPurpose }
+        });
+
+        // Seed purpose-specific tags
+        await seedDefaultTags(userId, accountPurpose);
+
+        // Seed purpose-specific folders
+        await ensureSystemFolders(userId, accountPurpose);
+
+        console.log(`[DemoMode] Set accountPurpose='${accountPurpose}' for user ${userId}`);
+
+        res.json({ success: true, accountPurpose });
+    } catch (error) {
+        console.error('Set Account Purpose Error:', error);
+        res.status(500).json({ error: 'Failed to set account purpose' });
     }
 };

@@ -9,6 +9,7 @@ import { SettingsScreen } from './routes/SettingsScreen';
 import { LoginScreen } from './routes/LoginScreen';
 import { SignupScreen } from './routes/SignupScreen';
 import { EditProfileScreen } from './routes/EditProfileScreen';
+import { LandingScreen } from './routes/LandingScreen';
 import { useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useSync } from './hooks/useSync';
@@ -43,7 +44,7 @@ function App() {
               <Route path="/login" element={<PublicRoute><LoginScreen /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignupScreen /></PublicRoute>} />
 
-              <Route path="/" element={<Navigate to="/capture" replace />} />
+              <Route path="/" element={<PublicRoute><LandingScreen /></PublicRoute>} />
 
               <Route path="/capture" element={<ProtectedRoute><CaptureScreen /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><TaskListScreen /></ProtectedRoute>} />
@@ -59,4 +60,3 @@ function App() {
 }
 
 export default App;
-

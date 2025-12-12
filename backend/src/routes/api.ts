@@ -18,6 +18,7 @@ router.get('/auth/me', authenticateToken, authController.getMe);
 router.patch('/auth/profile', authenticateToken, authController.updateProfile);
 router.patch('/auth/password', authenticateToken, authController.updatePassword);
 router.delete('/auth/account', authenticateToken, authController.deleteAccount);
+router.patch('/auth/purpose', authenticateToken, authController.setAccountPurpose);
 
 // Tasks (Protected)
 router.get('/tasks', authenticateToken, taskController.getTasks);
@@ -26,6 +27,14 @@ router.patch('/tasks/:id', authenticateToken, taskController.updateTask);
 router.delete('/tasks/:id', authenticateToken, taskController.deleteTask);
 router.post('/tasks/:id/breakdown', authenticateToken, taskController.generateBreakdown);
 router.patch('/subtasks/:id', authenticateToken, taskController.toggleSubtask);
+
+// Folders (Protected)
+import * as folderController from '../controllers/folderController';
+router.get('/folders', authenticateToken, folderController.getFolders);
+router.post('/folders', authenticateToken, folderController.createFolder);
+router.delete('/folders/:id', authenticateToken, folderController.deleteFolder);
+router.get('/folders/:id/tasks', authenticateToken, folderController.getTasksInFolder);
+router.post('/tasks/:taskId/folders', authenticateToken, folderController.assignTaskToFolders);
 
 // Tags (Protected)
 router.get('/tags', authenticateToken, tagController.getTags);

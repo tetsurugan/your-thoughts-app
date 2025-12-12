@@ -26,8 +26,12 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     }
 
     jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
+        if (err) {
+            console.log('Auth Failed:', err.message);
+            return res.sendStatus(403);
+        }
+        (req as any).user = user;
+        console.log(`Auth Success: User ${user.userId} accessing ${req.method} ${req.originalUrl}`);
         next();
     });
 };

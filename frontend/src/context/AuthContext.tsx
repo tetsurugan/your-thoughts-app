@@ -3,7 +3,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 interface User {
     id: string;
     name: string;
-    email: string;
+    email: string | null;
+    isGuest?: boolean;
+    accountPurpose?: string;
 }
 
 interface AuthContextType {
@@ -14,7 +16,7 @@ interface AuthContextType {
     signup: (name: string, email: string, password: string, accountPurpose?: string) => Promise<void>;
     updateUser: (name: string, email: string) => Promise<void>;
     deleteAccount: () => Promise<void>;
-    loginAsGuest: () => Promise<void>;
+    loginAsGuest: (accountPurpose?: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -128,10 +130,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const loginAsGuest = async () => {
+    const loginAsGuest = async (accountPurpose?: string) => {
+        // Default to 'legal' purpose for demo mode
+        const purpose = accountPurpose || 'legal';
         try {
             const res = await fetch(`${API_BASE}/api/auth/guest`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountPurpose: purpose })
             });
 
             if (!res.ok) {

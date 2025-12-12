@@ -4,7 +4,7 @@ import { offlineStorage } from '../services/offlineStorage';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 // Helper to get auth headers
-const getAuthHeaders = (): HeadersInit => {
+export const getAuthHeaders = (): HeadersInit => {
     const token = localStorage.getItem('auth_token');
     return {
         'Content-Type': 'application/json',
@@ -35,17 +35,27 @@ export const useApi = () => {
     const createTaskFromIntent = async (text: string, sourceType: 'text' | 'voice' = 'text', recurrenceOptions?: { isRecurring: boolean, recurrenceInterval: string }) => {
         setLoading(true);
         try {
+            const headers = getAuthHeaders();
+            console.log('API Request:', '/api/intent', { text, sourceType, headers });
+
             const res = await fetch(`${API_BASE}/api/intent`, {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers,
                 body: JSON.stringify({
                     text,
                     sourceType,
                     ...(recurrenceOptions && { ...recurrenceOptions })
                 })
             });
-            if (!res.ok) throw new Error('Failed to create task');
-            return await res.json();
+            console.log('API Response status:', res.status);
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('API Error body:', errorText);
+                throw new Error('Failed to create task: ' + res.status);
+            }
+            const data = await res.json();
+            console.log('API Success data:', data);
+            return data;
         } catch (err: any) {
             console.warn('Network request failed, adding to offline queue', err);
             try {

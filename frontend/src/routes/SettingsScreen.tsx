@@ -134,7 +134,7 @@ export const SettingsScreen = () => {
                                 </div>
                                 <div>
                                     <p className="text-xl font-bold text-slate-900">{user?.name || 'Guest'}</p>
-                                    <p className="text-slate-500">{user?.email || 'Not logged in'}</p>
+                                    <p className="text-slate-500">{user?.email || (user?.isGuest ? 'Demo Mode (Legal)' : 'Not logged in')}</p>
                                 </div>
                             </div>
                             <div className="px-4 py-2 bg-slate-100 rounded-lg text-sm font-bold text-slate-600">

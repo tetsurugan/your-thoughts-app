@@ -38,7 +38,10 @@ export const SignupScreen = () => {
     const handleGuestLogin = async () => {
         setLoading(true);
         try {
-            await loginAsGuest();
+            // Activate demo mode and login with legal purpose
+            const { activateDemoMode } = await import('../utils/demoMode');
+            activateDemoMode();
+            await loginAsGuest('legal');
             navigate('/capture');
         } catch (err: any) {
             setError(err.message || 'Failed to continue as guest');

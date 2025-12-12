@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 // GET /api/tags
 export const getTags = async (req: Request, res: Response) => {
-    const userId = (req as any).userId;
+    const userId = (req as any).user?.userId;
     try {
         const tags = await prisma.tag.findMany({
             where: { userId },
@@ -20,7 +20,7 @@ export const getTags = async (req: Request, res: Response) => {
 
 // POST /api/tags
 export const createTag = async (req: Request, res: Response) => {
-    const userId = (req as any).userId;
+    const userId = (req as any).user?.userId;
     const { name, color } = req.body;
 
     if (!name || !name.trim()) {
@@ -47,7 +47,7 @@ export const createTag = async (req: Request, res: Response) => {
 
 // DELETE /api/tags/:id
 export const deleteTag = async (req: Request, res: Response) => {
-    const userId = (req as any).userId;
+    const userId = (req as any).user?.userId;
     const { id } = req.params;
 
     try {
@@ -70,6 +70,8 @@ export const deleteTag = async (req: Request, res: Response) => {
 
 // Helper: Seed default tags based on account purpose
 export const seedDefaultTags = async (userId: string, purpose: string) => {
+    console.log(`[TagSeeding] START for User ${userId}, Purpose: ${purpose}`);
+
     const tagsByPurpose: Record<string, string[]> = {
         legal: ['Court Date', 'PO Meeting', 'Document Due', 'Appointment'],
         school: ['Homework', 'Exam', 'Project', 'Reading'],
@@ -79,13 +81,27 @@ export const seedDefaultTags = async (userId: string, purpose: string) => {
 
     const tags = tagsByPurpose[purpose] || [];
 
+    if (tags.length === 0) {
+        console.log(`[TagSeeding] No default tags found for purpose '${purpose}'`);
+        return;
+    }
+
+    console.log(`[TagSeeding] Found ${tags.length} tags to seed: ${JSON.stringify(tags)}`);
+
     for (const name of tags) {
         try {
             await prisma.tag.create({
                 data: { name, userId }
             });
-        } catch (e) {
-            // Ignore duplicates
+            console.log(`[TagSeeding] Created tag '${name}'`);
+        } catch (e: any) {
+            // Prisma error P2002 is unique constraint violation
+            if (e.code === 'P2002') {
+                console.log(`[TagSeeding] Skipped duplicate tag '${name}' for user ${userId}`);
+            } else {
+                console.error(`[TagSeeding] Failed to create tag '${name}':`, e);
+            }
         }
     }
+    console.log(`[TagSeeding] COMPLETE for User ${userId}`);
 };

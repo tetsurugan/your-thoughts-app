@@ -26,6 +26,23 @@ export function useDemoMode() {
 
         setIsSeeding(true);
         try {
+            // First, set account purpose to 'legal' to get proper folders/tags
+            const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+            const token = localStorage.getItem('auth_token');
+
+            if (token) {
+                await fetch(`${API_BASE}/api/auth/purpose`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ accountPurpose: 'legal' })
+                });
+                console.log('[DemoMode] Set account purpose to legal');
+            }
+
+            // Then seed demo tasks
             const demoTasks = getDemoTasks();
 
             for (const task of demoTasks) {

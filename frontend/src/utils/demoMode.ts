@@ -6,7 +6,24 @@
  */
 
 // Demo task templates for Legal Mode
+// Demo task templates for Legal Mode
 export const DEMO_LEGAL_TASKS = [
+    {
+        title: "Call Public Defender - Urgent",
+        description: "Ask about plea deal options and upcoming hearing date.",
+        category: "legal",
+        dueAt: new Date(), // Today
+        isRecurring: false,
+        sourceType: "text"
+    },
+    {
+        title: "Submit Income Verification",
+        description: "Required for fee waiver application. Take photo of pay stub.",
+        category: "legal",
+        dueAt: new Date(), // Today
+        isRecurring: false,
+        sourceType: "text"
+    },
     {
         title: "PO Check-in with Officer Martinez",
         description: "Monthly probation check-in. Bring ID and proof of address.",
@@ -31,22 +48,6 @@ export const DEMO_LEGAL_TASKS = [
         dueAt: getEndOfMonth(),
         isRecurring: true,
         recurrenceInterval: "monthly",
-        sourceType: "text"
-    },
-    {
-        title: "Community Service - Food Bank",
-        description: "4 hours remaining. Saturday 9AM-1PM shift available.",
-        category: "legal",
-        dueAt: getNextWeekday(6), // Saturday
-        isRecurring: false,
-        sourceType: "text"
-    },
-    {
-        title: "Drug Test Appointment",
-        description: "Random testing window. Lab closes at 5pm.",
-        category: "legal",
-        dueAt: getTomorrow(),
-        isRecurring: false,
         sourceType: "text"
     }
 ];
@@ -113,4 +114,27 @@ export function getDemoTasks() {
         ...task,
         dueAt: task.dueAt.toISOString()
     }));
+}
+
+// Seed legal demo tasks directly
+export async function seedLegalDemoTasks(api: any): Promise<void> {
+    console.log('[DemoMode] Seeding legal tasks...');
+    const tasks = getDemoTasks();
+    let seededCount = 0;
+
+    for (const task of tasks) {
+        try {
+            await api.createTaskDirect(task);
+            seededCount++;
+        } catch (err) {
+            console.warn('[DemoMode] Failed to seed task:', task.title, err);
+        }
+    }
+
+    if (seededCount > 0) {
+        markDemoDataSeeded();
+        console.log(`[DemoMode] Successfully seeded ${seededCount} tasks`);
+    } else {
+        console.error('[DemoMode] Failed to seed any tasks');
+    }
 }

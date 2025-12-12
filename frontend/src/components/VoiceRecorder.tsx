@@ -40,7 +40,7 @@ export const VoiceRecorder = ({ onClose, onComplete }: VoiceRecorderProps) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/95 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm animate-in fade-in duration-200">
             <button
                 onClick={onClose}
                 className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
@@ -62,8 +62,8 @@ export const VoiceRecorder = ({ onClose, onComplete }: VoiceRecorderProps) => {
                     <button
                         onClick={isListening ? stopListening : startListening}
                         className={`relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 ${isListening
-                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 scale-110 shadow-2xl shadow-blue-500/50'
-                                : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 scale-110 shadow-2xl shadow-blue-500/50'
+                            : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                             }`}
                     >
                         <Mic className={`w-10 h-10 text-white ${isListening ? 'animate-pulse' : ''}`} />

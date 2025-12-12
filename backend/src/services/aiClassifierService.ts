@@ -2,57 +2,48 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// System folder definitions with keywords and icons
-const SYSTEM_FOLDERS = [
-    {
-        name: 'Probation',
-        icon: '⚖️',
-        color: '#6366f1',
-        keywords: ['po', 'probation', 'parole', 'officer', 'check-in', 'check in', 'supervision', 'conditions']
-    },
-    {
-        name: 'Court',
-        icon: '🏛️',
-        color: '#ef4444',
-        keywords: ['court', 'judge', 'hearing', 'trial', 'arraignment', 'sentencing', 'plea', 'attorney', 'lawyer']
-    },
-    {
-        name: 'Benefits',
-        icon: '📋',
-        color: '#22c55e',
-        keywords: ['benefits', 'snap', 'ebt', 'food stamps', 'medicaid', 'medicare', 'social security', 'ssi', 'ssdi', 'tanf', 'wic', 'unemployment']
-    },
-    {
-        name: 'Housing',
-        icon: '🏠',
-        color: '#f59e0b',
-        keywords: ['housing', 'rent', 'lease', 'apartment', 'shelter', 'section 8', 'voucher', 'landlord', 'eviction', 'move']
-    },
-    {
-        name: 'Work',
-        icon: '💼',
-        color: '#3b82f6',
-        keywords: ['work', 'job', 'interview', 'resume', 'application', 'employer', 'boss', 'shift', 'paycheck', 'income']
-    },
-    {
-        name: 'Programs',
-        icon: '📚',
-        color: '#8b5cf6',
-        keywords: ['class', 'classes', 'program', 'training', 'course', 'school', 'education', 'ged', 'certificate', 'workshop', 'orientation']
-    },
-    {
-        name: 'Health',
-        icon: '❤️',
-        color: '#ec4899',
-        keywords: ['doctor', 'appointment', 'medication', 'prescription', 'therapy', 'counseling', 'mental health', 'clinic', 'hospital']
-    },
-    {
-        name: 'Personal',
-        icon: '🌟',
-        color: '#64748b',
-        keywords: ['family', 'kids', 'children', 'birthday', 'personal', 'home', 'errands']
-    }
-];
+// Purpose-specific folder definitions
+const FOLDERS_BY_PURPOSE: Record<string, Array<{ name: string; icon: string; color: string; keywords: string[] }>> = {
+    legal: [
+        { name: 'Probation', icon: '⚖️', color: '#6366f1', keywords: ['po', 'probation', 'parole', 'officer', 'check-in', 'supervision'] },
+        { name: 'Court', icon: '🏛️', color: '#ef4444', keywords: ['court', 'judge', 'hearing', 'trial', 'attorney', 'lawyer'] },
+        { name: 'Benefits', icon: '📋', color: '#22c55e', keywords: ['benefits', 'snap', 'ebt', 'medicaid', 'ssi', 'unemployment'] },
+        { name: 'Housing', icon: '🏠', color: '#f59e0b', keywords: ['housing', 'rent', 'lease', 'apartment', 'shelter', 'section 8'] },
+        { name: 'Programs', icon: '📚', color: '#8b5cf6', keywords: ['class', 'program', 'training', 'course', 'workshop'] },
+        { name: 'Health', icon: '❤️', color: '#ec4899', keywords: ['doctor', 'medication', 'therapy', 'counseling', 'clinic'] },
+        { name: 'Personal', icon: '🌟', color: '#64748b', keywords: ['family', 'personal', 'home', 'errands'] }
+    ],
+    school: [
+        { name: 'Classes', icon: '📚', color: '#3b82f6', keywords: ['class', 'lecture', 'professor', 'teacher', 'attendance'] },
+        { name: 'Assignments', icon: '📝', color: '#ef4444', keywords: ['homework', 'assignment', 'essay', 'paper', 'due', 'submit'] },
+        { name: 'Exams', icon: '✏️', color: '#f59e0b', keywords: ['exam', 'test', 'quiz', 'midterm', 'final', 'study'] },
+        { name: 'Projects', icon: '🎯', color: '#8b5cf6', keywords: ['project', 'presentation', 'group', 'research'] },
+        { name: 'Activities', icon: '⚽', color: '#22c55e', keywords: ['club', 'sport', 'practice', 'meeting', 'event'] },
+        { name: 'Personal', icon: '🌟', color: '#64748b', keywords: ['personal', 'home', 'family', 'errands'] }
+    ],
+    work: [
+        { name: 'Meetings', icon: '👥', color: '#3b82f6', keywords: ['meeting', 'call', 'standup', 'sync', '1:1', 'team'] },
+        { name: 'Deadlines', icon: '⏰', color: '#ef4444', keywords: ['deadline', 'due', 'deliver', 'ship', 'launch'] },
+        { name: 'Projects', icon: '🎯', color: '#8b5cf6', keywords: ['project', 'feature', 'milestone', 'sprint'] },
+        { name: 'Admin', icon: '📋', color: '#f59e0b', keywords: ['expense', 'timesheet', 'review', 'report', 'hr'] },
+        { name: 'Learning', icon: '📚', color: '#22c55e', keywords: ['training', 'course', 'certification', 'learn'] },
+        { name: 'Personal', icon: '🌟', color: '#64748b', keywords: ['personal', 'home', 'family', 'errands'] }
+    ],
+    custom: [
+        { name: 'Tasks', icon: '✅', color: '#3b82f6', keywords: ['task', 'todo', 'do'] },
+        { name: 'Events', icon: '📅', color: '#8b5cf6', keywords: ['event', 'appointment', 'meeting'] },
+        { name: 'Ideas', icon: '💡', color: '#f59e0b', keywords: ['idea', 'thought', 'note'] },
+        { name: 'Personal', icon: '🌟', color: '#64748b', keywords: ['personal', 'home', 'family', 'errands'] }
+    ]
+};
+
+// Get folders for a specific purpose (fallback to custom)
+function getFoldersForPurpose(purpose: string) {
+    return FOLDERS_BY_PURPOSE[purpose] || FOLDERS_BY_PURPOSE['custom'];
+}
+
+// Legacy: Keep SYSTEM_FOLDERS for backward compatibility (defaults to legal)
+const SYSTEM_FOLDERS = FOLDERS_BY_PURPOSE['legal'];
 
 interface FolderMatch {
     name: string;
@@ -108,24 +99,39 @@ export function classifyContent(text: string): FolderMatch[] {
 }
 
 /**
- * Ensures system folders exist for a user
+ * Ensures system folders exist for a user (based on their account purpose)
  */
-export async function ensureSystemFolders(userId: string) {
-    for (const folder of SYSTEM_FOLDERS) {
-        await prisma.folder.upsert({
-            where: {
-                userId_name: { userId, name: folder.name }
-            },
-            update: {},
-            create: {
-                userId,
-                name: folder.name,
-                icon: folder.icon,
-                color: folder.color,
-                isSystem: true
-            }
-        });
+/**
+ * Ensures system folders exist for a user (based on their account purpose)
+ */
+export async function ensureSystemFolders(userId: string, accountPurpose?: string) {
+    const purpose = accountPurpose || 'custom';
+    console.log(`[FolderSeeding] START for User ${userId}, Purpose: ${purpose}`);
+
+    const folders = getFoldersForPurpose(purpose);
+    console.log(`[FolderSeeding] Found ${folders.length} folders to seed: ${folders.map(f => f.name).join(', ')}`);
+
+    for (const folder of folders) {
+        try {
+            await prisma.folder.upsert({
+                where: {
+                    userId_name: { userId, name: folder.name }
+                },
+                update: {}, // Don't overwrite if exists
+                create: {
+                    userId,
+                    name: folder.name,
+                    icon: folder.icon,
+                    color: folder.color,
+                    isSystem: true
+                }
+            });
+            console.log(`[FolderSeeding] Ensured folder '${folder.name}'`);
+        } catch (e: any) {
+            console.error(`[FolderSeeding] Failed to upsert folder '${folder.name}':`, e);
+        }
     }
+    console.log(`[FolderSeeding] COMPLETE for User ${userId}`);
 }
 
 /**
@@ -136,11 +142,19 @@ export async function assignTaskToFolders(
     userId: string,
     content: string
 ): Promise<FolderMatch[]> {
-    // Ensure system folders exist
-    await ensureSystemFolders(userId);
+    // Fetch user's account purpose
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { accountPurpose: true }
+    });
+    const purpose = user?.accountPurpose || 'custom';
 
-    // Classify content
-    const matches = classifyContent(content);
+    // Ensure system folders exist for this purpose
+    await ensureSystemFolders(userId, purpose);
+
+    // Classify content using purpose-specific folders
+    const purposeFolders = getFoldersForPurpose(purpose);
+    const matches = classifyContentWithFolders(content, purposeFolders);
 
     // Get folder IDs
     const folderNames = matches.map(m => m.name);
@@ -167,6 +181,49 @@ export async function assignTaskToFolders(
                 }
             });
         }
+    }
+
+    return matches;
+}
+
+/**
+ * Classifies content against a specific folder set
+ */
+function classifyContentWithFolders(text: string, folders: typeof SYSTEM_FOLDERS): FolderMatch[] {
+    const lowerText = text.toLowerCase();
+    const matches: FolderMatch[] = [];
+
+    for (const folder of folders) {
+        let matchCount = 0;
+        let totalKeywords = folder.keywords.length;
+
+        for (const keyword of folder.keywords) {
+            if (lowerText.includes(keyword)) {
+                matchCount++;
+            }
+        }
+
+        if (matchCount > 0) {
+            const confidence = Math.max(0.3, matchCount / Math.min(totalKeywords, 3));
+            matches.push({
+                name: folder.name,
+                confidence: Math.min(confidence, 1.0),
+                icon: folder.icon,
+                color: folder.color
+            });
+        }
+    }
+
+    matches.sort((a, b) => b.confidence - a.confidence);
+
+    if (matches.length === 0) {
+        const personal = folders.find(f => f.name === 'Personal') || folders[0];
+        matches.push({
+            name: personal.name,
+            confidence: 0.5,
+            icon: personal.icon,
+            color: personal.color
+        });
     }
 
     return matches;

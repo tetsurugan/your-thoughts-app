@@ -182,7 +182,7 @@ export const CaptureScreen = () => {
     if (view === 'text') {
         return (
             <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
-                <div className="container px-4 py-6 pb-32 h-screen flex flex-col">
+                <div className="container px-4 py-6 pb-32 flex flex-col min-h-screen">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">New Note</h2>
                         <button onClick={() => setView('home')} className="p-2 bg-gray-100 dark:bg-slate-800 rounded-full"><X className="w-6 h-6 text-gray-500 dark:text-gray-400" /></button>
@@ -191,10 +191,10 @@ export const CaptureScreen = () => {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Type here..."
-                        className="flex-1 w-full p-5 text-xl rounded-2xl border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 resize-none mb-6 shadow-sm"
+                        className="flex-1 w-full p-5 text-xl rounded-2xl border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 resize-y mb-6 shadow-sm min-h-[50vh]"
                         autoFocus
                     />
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex justify-between items-center mb-6 sticky bottom-6 bg-slate-100 dark:bg-slate-950 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-slate-800 z-10">
                         <select
                             value={recurrenceInterval || ''}
                             onChange={(e) => setRecurrenceInterval(e.target.value || null)}

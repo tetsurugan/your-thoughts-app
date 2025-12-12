@@ -29,6 +29,10 @@ export const LoginScreen = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
             <div className="w-full max-w-sm space-y-6">
+                <Link to="/" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors mb-4">
+                    <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+                    Back to Home
+                </Link>
                 <div className="text-center space-y-2">
                     <h1 className="text-3xl font-extrabold text-slate-900">Welcome back</h1>
                     <p className="text-slate-500">Sign in to continue to Your Thoughts</p>
@@ -91,7 +95,10 @@ export const LoginScreen = () => {
                     onClick={async () => {
                         setLoading(true);
                         try {
-                            await loginAsGuest();
+                            // Activate demo mode and login with legal purpose
+                            const { activateDemoMode } = await import('../utils/demoMode');
+                            activateDemoMode();
+                            await loginAsGuest('legal');
                             navigate('/capture');
                         } catch (err: any) {
                             setError(err.message);

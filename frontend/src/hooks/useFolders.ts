@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getAuthHeaders } from './useApi';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
@@ -18,7 +19,9 @@ export const useFolders = () => {
 
     const fetchFolders = async () => {
         try {
-            const res = await fetch(`${API_BASE}/api/folders`);
+            const res = await fetch(`${API_BASE}/api/folders`, {
+                headers: getAuthHeaders()
+            });
             if (res.ok) {
                 const data = await res.json();
                 setFolders(data);
@@ -34,7 +37,7 @@ export const useFolders = () => {
         try {
             const res = await fetch(`${API_BASE}/api/folders`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ name, icon, color })
             });
             if (res.ok) {
@@ -51,7 +54,8 @@ export const useFolders = () => {
     const deleteFolder = async (id: string) => {
         try {
             const res = await fetch(`${API_BASE}/api/folders/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: getAuthHeaders()
             });
             if (res.ok) {
                 setFolders(prev => prev.filter(f => f.id !== id));

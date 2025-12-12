@@ -236,16 +236,14 @@ export const TaskListScreen = () => {
                                 task={t}
                                 onToggle={handleToggle}
                                 onRefresh={refetchAll}
-                                onDelete={async () => {
-                                    /* Currently no hard-delete API exposed easily here except reusing api logic or adding new one */
-                                    /* For now, just confirming the swipe works, we can map it to toggle for MVP or add archive later */
-                                    if (window.confirm("Delete this task?")) {
-                                        // TODO: Add Archive/Delete API
-                                        // For now, let's just complete it as 'Archive' or actually call Delete
-                                        // Let's rely on backend Delete if we have it? We have deleteAccount but not deleteTask in auth, wait we do have delete in API?
-                                        // api.deleteTask? We haven't built deleteTask in useApi yet for general tasks, only calendar.
-                                        // Let's just alert for now or omit.
-                                        alert("Delete feature coming soon!");
+                                onDelete={async (taskId) => {
+                                    try {
+                                        await api.deleteTask(taskId);
+                                        showToast('Task deleted', 'success');
+                                        fetchTasks();
+                                    } catch (error) {
+                                        console.error('Failed to delete task:', error);
+                                        showToast('Failed to delete task', 'error');
                                     }
                                 }}
                             />
