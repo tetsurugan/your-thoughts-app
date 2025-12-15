@@ -43,13 +43,17 @@ export const LandingScreen = () => {
     }, [loginAsGuest, navigate]);
 
     const handleGuest = async () => {
+        setIsDemoLoading(true);
         try {
             // Demo mode should always use legal persona
             activateDemoMode();
+            console.log('[DemoMode] handleGuest - calling loginAsGuest...');
             await loginAsGuest('legal');
-            navigate('/capture');
+            console.log('[DemoMode] handleGuest - login successful, navigating...');
+            navigate('/tasks');
         } catch (error) {
-            console.error(error);
+            console.error('[DemoMode] handleGuest failed:', error);
+            setIsDemoLoading(false);
         }
     };
 
