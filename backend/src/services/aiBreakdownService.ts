@@ -13,6 +13,128 @@ const gemini = process.env.GEMINI_API_KEY
     ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
     : null;
 
+// Interface for detected tasks
+export interface DetectedTask {
+    title: string;
+    dueAt?: string;  // ISO date string if time was detected
+    category?: string;
+}
+
+/**
+ * Detect multiple tasks from a single input text
+ * e.g., "go to the store at 6 and talk to my PO at 8" -> 2 tasks
+ */
+export async function detectMultipleTasks(inputText: string): Promise<DetectedTask[]> {
+    console.log(`[MultiTask] Detecting tasks in: "${inputText}"`);
+
+    let tasks: DetectedTask[] = [];
+
+    // 1. Try OpenAI
+    if (openai) {
+        try {
+            const response = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are a task parser. Given input text, identify ALL separate tasks mentioned.
+For each task, extract:
+- title: Clear task description
+- dueAt: ISO date string if a time is mentioned (use today's date with the time)
+- category: One of "legal", "benefits", "health", "work", "personal"
+
+Return JSON: { "tasks": [{ "title": "...", "dueAt": "...", "category": "..." }] }
+If only ONE task, still return array with 1 item.
+Today is: ${new Date().toISOString().split('T')[0]}`
+                    },
+                    {
+                        role: 'user',
+                        content: inputText
+                    }
+                ],
+                response_format: { type: "json_object" }
+            });
+
+            const content = response.choices[0].message.content;
+            if (content) {
+                const parsed = JSON.parse(content);
+                tasks = parsed.tasks || [];
+                console.log(`[MultiTask] OpenAI detected ${tasks.length} tasks`);
+            }
+        } catch (error) {
+            console.error('[MultiTask] OpenAI Error:', error);
+        }
+    }
+
+    // 2. Try Gemini (if OpenAI failed)
+    if (tasks.length === 0 && gemini) {
+        try {
+            const model = gemini.getGenerativeModel({ model: "gemini-pro" });
+            const today = new Date().toISOString().split('T')[0];
+            const prompt = `Parse this text into separate tasks. For each task, extract title, dueAt (ISO datetime if time mentioned, use ${today} for today), and category (legal/benefits/health/work/personal).
+
+Text: "${inputText}"
+
+Return ONLY JSON: { "tasks": [{ "title": "...", "dueAt": "...", "category": "..." }] }`;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(text);
+            tasks = parsed.tasks || [];
+            console.log(`[MultiTask] Gemini detected ${tasks.length} tasks`);
+        } catch (error) {
+            console.error('[MultiTask] Gemini Error:', error);
+        }
+    }
+
+    // 3. Fallback: regex-based splitting on "and", "then", ","
+    if (tasks.length === 0) {
+        console.log('[MultiTask] Using fallback regex detection');
+        const parts = inputText.split(/\s+and\s+|\s+then\s+|,\s*/i).filter(p => p.trim().length > 3);
+
+        tasks = parts.map(part => {
+            // Try to extract time from each part
+            const timeMatch = part.match(/at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+            let dueAt: string | undefined;
+
+            if (timeMatch) {
+                let hour = parseInt(timeMatch[1]);
+                const min = timeMatch[2] ? parseInt(timeMatch[2]) : 0;
+                const ampm = timeMatch[3]?.toLowerCase();
+
+                if (ampm === 'pm' && hour < 12) hour += 12;
+                if (ampm === 'am' && hour === 12) hour = 0;
+
+                const date = new Date();
+                date.setHours(hour, min, 0, 0);
+                dueAt = date.toISOString();
+            }
+
+            // Infer category from keywords
+            let category = 'personal';
+            const lower = part.toLowerCase();
+            if (lower.includes('po') || lower.includes('probation') || lower.includes('court')) {
+                category = 'legal';
+            } else if (lower.includes('doctor') || lower.includes('appointment') || lower.includes('health')) {
+                category = 'health';
+            } else if (lower.includes('work') || lower.includes('meeting') || lower.includes('boss')) {
+                category = 'work';
+            }
+
+            return {
+                title: part.trim(),
+                dueAt,
+                category
+            };
+        });
+
+        console.log(`[MultiTask] Fallback detected ${tasks.length} tasks`);
+    }
+
+    return tasks;
+}
+
 // Heuristic Templates for Fallback
 const TEMPLATES: Record<string, string[]> = {
     'benefits': [

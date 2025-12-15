@@ -191,6 +191,22 @@ export const useApi = () => {
         }
     };
 
+    // Detect multiple tasks from input text
+    const detectTasks = async (text: string) => {
+        try {
+            const res = await fetch(`${API_BASE}/api/tasks/detect`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ text })
+            });
+            if (!res.ok) throw new Error('Failed to detect tasks');
+            return await res.json();
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
     const breakdownTask = async (taskId: string) => {
         setLoading(true);
         try {
@@ -276,6 +292,7 @@ export const useApi = () => {
         uploadDocument,
         parseDocument,
         breakdownTask,
-        toggleSubtask
+        toggleSubtask,
+        detectTasks
     };
 };

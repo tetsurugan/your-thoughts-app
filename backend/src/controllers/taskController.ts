@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { breakdownTask } from '../services/aiBreakdownService';
+import { breakdownTask, detectMultipleTasks } from '../services/aiBreakdownService';
 
 const prisma = new PrismaClient();
 
@@ -235,6 +235,28 @@ export const deleteTask = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Delete Task Error:', error);
         res.status(500).json({ error: 'Failed to delete task' });
+    }
+};
+
+// POST /api/tasks/detect - Detect multiple tasks from input text
+export const detectTasks = async (req: Request, res: Response) => {
+    const { text } = req.body;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!text || typeof text !== 'string') {
+        return res.status(400).json({ error: 'Text input required' });
+    }
+
+    try {
+        const detectedTasks = await detectMultipleTasks(text);
+        res.json({ tasks: detectedTasks });
+    } catch (error) {
+        console.error('Detect Tasks Error:', error);
+        res.status(500).json({ error: 'Failed to detect tasks' });
     }
 };
 

@@ -26,6 +26,7 @@ router.post('/tasks', authenticateToken, taskController.createTask);
 router.patch('/tasks/:id', authenticateToken, taskController.updateTask);
 router.delete('/tasks/:id', authenticateToken, taskController.deleteTask);
 router.post('/tasks/:id/breakdown', authenticateToken, taskController.generateBreakdown);
+router.post('/tasks/detect', authenticateToken, taskController.detectTasks);
 router.patch('/subtasks/:id', authenticateToken, taskController.toggleSubtask);
 
 // Folders (Protected)

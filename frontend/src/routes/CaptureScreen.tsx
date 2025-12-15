@@ -15,7 +15,14 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { ERROR_MESSAGES } from '../utils/messages';
 
-type CaptureView = 'home' | 'text' | 'voice' | 'camera_preview' | 'ocr_result' | 'success' | 'loading';
+type CaptureView = 'home' | 'text' | 'voice' | 'camera_preview' | 'ocr_result' | 'success' | 'loading' | 'confirm_tasks';
+
+interface DetectedTask {
+    title: string;
+    dueAt?: string;
+    category?: string;
+    selected?: boolean;
+}
 
 export const CaptureScreen = () => {
     const [view, setView] = useState<CaptureView>('home');
@@ -26,6 +33,7 @@ export const CaptureScreen = () => {
     const { user } = useAuth();
     const api = useApi();
     const { showToast } = useToast();
+    const [detectedTasks, setDetectedTasks] = useState<DetectedTask[]>([]);
 
     const { tasks, fetchTasks } = useTasks();
 
@@ -85,23 +93,59 @@ export const CaptureScreen = () => {
         if (!text.trim()) return;
         setView('loading');
         try {
-            // If we came from voice view (even indirectly via text review), logic is tricky to track strictly
-            // We'll trust the user to create content. 
-            // For now, let's default to text unless we strictly track source.
-            // Simplified: everything reviewed in text box is 'text' or 'voice' if logic allows.
-            // Let's assume 'text' source unless we add robust state tracking for source.
-            // Ideally we'd pass source to this function.
-            await api.createTaskFromIntent(
-                text,
-                'text',
-                recurrenceInterval ? { isRecurring: true, recurrenceInterval } : undefined
-            );
+            // First, detect if there are multiple tasks
+            const result = await api.detectTasks(text);
+            const tasks = result.tasks || [];
+
+            if (tasks.length > 1) {
+                // Multiple tasks detected - show confirmation
+                setDetectedTasks(tasks.map((t: DetectedTask) => ({ ...t, selected: true })));
+                setView('confirm_tasks');
+            } else {
+                // Single task - create directly
+                await api.createTaskFromIntent(
+                    text,
+                    'text',
+                    recurrenceInterval ? { isRecurring: true, recurrenceInterval } : undefined
+                );
+                handleSuccess();
+            }
+        } catch (err) {
+            console.error(err);
+            showToast(ERROR_MESSAGES.TASK_CREATE_FAILED, 'error');
+            setView('text');
+        }
+    };
+
+    const handleConfirmTasks = async () => {
+        const selectedTasks = detectedTasks.filter(t => t.selected);
+        if (selectedTasks.length === 0) {
+            setView('text');
+            return;
+        }
+
+        setView('loading');
+        try {
+            for (const task of selectedTasks) {
+                await api.createTaskDirect({
+                    title: task.title,
+                    category: task.category || 'personal',
+                    dueAt: task.dueAt,
+                    sourceType: 'text'
+                });
+            }
             handleSuccess();
         } catch (err) {
             console.error(err);
             showToast(ERROR_MESSAGES.TASK_CREATE_FAILED, 'error');
             setView('text');
         }
+    };
+
+    const toggleTaskSelection = (index: number) => {
+        setDetectedTasks(prev => prev.map((t, i) =>
+            i === index ? { ...t, selected: !t.selected } : t
+        ));
     };
 
     const handleSuccess = () => {
@@ -207,6 +251,74 @@ export const CaptureScreen = () => {
                             <option value="yearly">Yearly</option>
                         </select>
                         <PrimaryButton label="Create Task" onClick={handleSubmitText} disabled={!text.trim()} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (view === 'confirm_tasks') {
+        const selectedCount = detectedTasks.filter(t => t.selected).length;
+        return (
+            <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
+                <div className="container px-4 py-6 pb-32">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                            Found {detectedTasks.length} Tasks
+                        </h2>
+                        <button onClick={() => setView('text')} className="p-2 bg-gray-100 dark:bg-slate-800 rounded-full">
+                            <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                        </button>
+                    </div>
+
+                    <p className="text-slate-600 dark:text-slate-400 mb-6">
+                        I found multiple tasks in your note. Select the ones you want to create:
+                    </p>
+
+                    <div className="space-y-3 mb-8">
+                        {detectedTasks.map((task, index) => (
+                            <button
+                                key={index}
+                                onClick={() => toggleTaskSelection(index)}
+                                className={`w-full p-4 rounded-xl border-2 transition-all text-left ${task.selected
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                        : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                    }`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 ${task.selected
+                                            ? 'border-blue-500 bg-blue-500'
+                                            : 'border-gray-300 dark:border-slate-600'
+                                        }`}>
+                                        {task.selected && <CheckCircle2 className="w-4 h-4 text-white" />}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-slate-900 dark:text-white">{task.title}</h3>
+                                        <div className="flex gap-2 mt-1">
+                                            {task.category && (
+                                                <span className="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 capitalize">
+                                                    {task.category}
+                                                </span>
+                                            )}
+                                            {task.dueAt && (
+                                                <span className="text-xs text-blue-600 dark:text-blue-400">
+                                                    Due: {format(new Date(task.dueAt), 'h:mm a')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="sticky bottom-6 space-y-3">
+                        <PrimaryButton
+                            label={`Create ${selectedCount} Task${selectedCount !== 1 ? 's' : ''}`}
+                            onClick={handleConfirmTasks}
+                            disabled={selectedCount === 0}
+                        />
+                        <SecondaryButton label="Back to Edit" onClick={() => setView('text')} />
                     </div>
                 </div>
             </div>
