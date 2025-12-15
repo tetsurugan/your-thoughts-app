@@ -22,6 +22,8 @@ interface DetectedTask {
     dueAt?: string;
     category?: string;
     selected?: boolean;
+    needsAmPm?: boolean;  // True if time was detected without AM/PM
+    isAm?: boolean;       // User's choice: true = AM, false = PM
 }
 
 export const CaptureScreen = () => {
@@ -99,7 +101,18 @@ export const CaptureScreen = () => {
 
             if (tasks.length > 1) {
                 // Multiple tasks detected - show confirmation
-                setDetectedTasks(tasks.map((t: DetectedTask) => ({ ...t, selected: true })));
+                // Check which tasks need AM/PM clarification
+                setDetectedTasks(tasks.map((t: DetectedTask) => {
+                    let needsAmPm = false;
+                    let isAm = true; // default to AM
+                    if (t.dueAt) {
+                        const hour = new Date(t.dueAt).getHours();
+                        // If hour is between 1-12 and original text didn't have am/pm, needs clarification
+                        // We detect this by checking if hour matches a simple number pattern
+                        needsAmPm = hour >= 1 && hour <= 12;
+                    }
+                    return { ...t, selected: true, needsAmPm, isAm };
+                }));
                 setView('confirm_tasks');
             } else {
                 // Single task - create directly
@@ -146,6 +159,29 @@ export const CaptureScreen = () => {
         setDetectedTasks(prev => prev.map((t, i) =>
             i === index ? { ...t, selected: !t.selected } : t
         ));
+    };
+
+    const updateTaskTitle = (index: number, newTitle: string) => {
+        setDetectedTasks(prev => prev.map((t, i) =>
+            i === index ? { ...t, title: newTitle } : t
+        ));
+    };
+
+    const toggleAmPm = (index: number) => {
+        setDetectedTasks(prev => prev.map((t, i) => {
+            if (i !== index || !t.dueAt) return t;
+            const date = new Date(t.dueAt);
+            const hours = date.getHours();
+            // Toggle between AM and PM by adding/subtracting 12 hours
+            if (t.isAm) {
+                // Currently AM, switch to PM
+                date.setHours(hours < 12 ? hours + 12 : hours);
+            } else {
+                // Currently PM, switch to AM
+                date.setHours(hours >= 12 ? hours - 12 : hours);
+            }
+            return { ...t, dueAt: date.toISOString(), isAm: !t.isAm };
+        }));
     };
 
     const handleSuccess = () => {
@@ -275,40 +311,69 @@ export const CaptureScreen = () => {
                         I found multiple tasks in your note. Select the ones you want to create:
                     </p>
 
-                    <div className="space-y-3 mb-8">
+                    <div className="space-y-4 mb-8">
                         {detectedTasks.map((task, index) => (
-                            <button
+                            <div
                                 key={index}
-                                onClick={() => toggleTaskSelection(index)}
-                                className={`w-full p-4 rounded-xl border-2 transition-all text-left ${task.selected
-                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                className={`p-4 rounded-xl border-2 transition-all ${task.selected
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                    : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
                                     }`}
                             >
                                 <div className="flex items-start gap-3">
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 ${task.selected
+                                    {/* Selection checkbox */}
+                                    <button
+                                        onClick={() => toggleTaskSelection(index)}
+                                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-2 flex-shrink-0 ${task.selected
                                             ? 'border-blue-500 bg-blue-500'
                                             : 'border-gray-300 dark:border-slate-600'
-                                        }`}>
+                                            }`}
+                                    >
                                         {task.selected && <CheckCircle2 className="w-4 h-4 text-white" />}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-slate-900 dark:text-white">{task.title}</h3>
-                                        <div className="flex gap-2 mt-1">
+                                    </button>
+
+                                    <div className="flex-1 space-y-3">
+                                        {/* Editable title */}
+                                        <input
+                                            type="text"
+                                            value={task.title}
+                                            onChange={(e) => updateTaskTitle(index, e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="w-full font-semibold text-slate-900 dark:text-white bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-blue-500 focus:outline-none py-1 px-0"
+                                        />
+
+                                        <div className="flex flex-wrap items-center gap-2">
                                             {task.category && (
                                                 <span className="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 capitalize">
                                                     {task.category}
                                                 </span>
                                             )}
+
+                                            {/* Time display with AM/PM toggle */}
                                             {task.dueAt && (
-                                                <span className="text-xs text-blue-600 dark:text-blue-400">
-                                                    Due: {format(new Date(task.dueAt), 'h:mm a')}
-                                                </span>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs text-blue-600 dark:text-blue-400">
+                                                        Due: {format(new Date(task.dueAt), 'h:mm')}
+                                                    </span>
+                                                    {task.needsAmPm && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); toggleAmPm(index); }}
+                                                            className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
+                                                        >
+                                                            {task.isAm ? 'AM' : 'PM'} ⇄
+                                                        </button>
+                                                    )}
+                                                    {!task.needsAmPm && (
+                                                        <span className="text-xs text-blue-600 dark:text-blue-400">
+                                                            {format(new Date(task.dueAt), 'a')}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     </div>
                                 </div>
-                            </button>
+                            </div>
                         ))}
                     </div>
 
