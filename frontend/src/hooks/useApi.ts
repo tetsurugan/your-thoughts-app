@@ -287,6 +287,18 @@ export const useApi = () => {
         createTaskDirect,
         deleteTask,
         connectGoogleCalendar,
+        getCalendarStatus: async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/calendar/status`, {
+                    headers: getAuthHeaders()
+                });
+                if (!res.ok) throw new Error('Failed to get calendar status');
+                return await res.json();
+            } catch (err: any) {
+                console.error('Calendar status check failed:', err);
+                return { connected: false };
+            }
+        },
         addTaskToCalendar,
         removeTaskFromCalendar,
         uploadDocument,

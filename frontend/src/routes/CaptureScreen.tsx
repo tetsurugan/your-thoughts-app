@@ -448,7 +448,7 @@ export const CaptureScreen = () => {
                         )}
 
                         {todayTasks.slice(0, 3).map(task => (
-                            <TaskCard key={task.id} task={task} onToggle={() => { }} />
+                            <TaskCard key={task.id} task={task} onRefresh={fetchTasks} onToggle={() => { }} />
                             // Note: toggling on home view might require a refetch wrapper or just link to tasks
                             // For MVP, we display card. If clicked, maybe go to details? 
                             // Using TaskCard is good for consistency. 

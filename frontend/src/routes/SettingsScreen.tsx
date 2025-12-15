@@ -103,13 +103,8 @@ export const SettingsScreen = () => {
 
     useEffect(() => {
         const checkStatus = async () => {
-            try {
-                const res = await fetch('http://localhost:3001/api/calendar/status');
-                const data = await res.json();
-                setIsConnected(data.connected);
-            } catch {
-                setIsConnected(false);
-            }
+            const status = await api.getCalendarStatus();
+            setIsConnected(status.connected);
         };
         checkStatus();
     }, []);

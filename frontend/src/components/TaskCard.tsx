@@ -1,5 +1,21 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, AlertCircle, Volume2, VolumeX, Sparkles, Repeat, Pencil, Save, X } from 'lucide-react';
+import {
+    Calendar as CalendarIcon,
+    Sparkles,
+    CheckCircle2,
+    Circle,
+    Mic,
+    MoreHorizontal,
+    Pencil,
+    Save,
+    X,
+    ChevronUp,
+    ChevronDown,
+    AlertCircle,
+    Volume2,
+    VolumeX,
+    Repeat
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { useApi } from '../hooks/useApi';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
@@ -35,6 +51,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
     const [calSuccess, setCalSuccess] = useState(!!task.googleEventId);
     const [isBreakingDown, setIsBreakingDown] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [showSubtasks, setShowSubtasks] = useState(true); // Default to true so newly broken down tasks are visible
     const [editTitle, setEditTitle] = useState(task.title);
     const [editDueAt, setEditDueAt] = useState(task.dueAt || '');
     const [isSaving, setIsSaving] = useState(false);
@@ -267,33 +284,52 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                                     />
                                 )
                             )}
-
-                            {!hasSubtasks && (
-                                <button
-                                    onClick={handleBreakdown}
-                                    disabled={isBreakingDown}
-                                    className="flex items-center gap-1 text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-full transition-all"
-                                >
-                                    {isBreakingDown ? (
-                                        <div className="animate-spin w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full"></div>
-                                    ) : (
-                                        <Sparkles className="w-3 h-3" />
-                                    )}
-                                    {isBreakingDown ? 'Thinking...' : 'Break this down'}
-                                </button>
-                            )}
                         </div>
                     )}
 
-                    {/* Subtasks List */}
-                    {task.subtasks && (
-                        <SubtaskList
-                            subtasks={task.subtasks}
-                            onUpdate={onRefresh || (() => { })}
-                        />
+                    <div className="flex items-center gap-4 mt-2">
+                        {!hasSubtasks ? (
+                            <button
+                                onClick={handleBreakdown}
+                                className="flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                                disabled={isBreakingDown}
+                            >
+                                {isBreakingDown ? (
+                                    <div className="animate-spin w-3.5 h-3.5 border-2 border-purple-600 border-t-transparent rounded-full"></div>
+                                ) : (
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                )}
+                                {isBreakingDown ? 'Thinking...' : 'Break this down'}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setShowSubtasks(!showSubtasks); }}
+                                className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors"
+                            >
+                                {showSubtasks ? (
+                                    <>
+                                        <ChevronUp className="w-3.5 h-3.5" />
+                                        Hide steps
+                                    </>
+                                ) : (
+                                    <>
+                                        <ChevronDown className="w-3.5 h-3.5" />
+                                        Show {task.subtasks?.length} steps
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Subtasks Section */}
+                    {hasSubtasks && showSubtasks && (
+                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
+                            <SubtaskList subtasks={task.subtasks!} onUpdate={onRefresh || (() => { })} />
+                        </div>
                     )}
                 </div>
             </div>
         </div>
     );
 };
+
