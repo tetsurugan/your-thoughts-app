@@ -66,12 +66,7 @@ function getNextWeekday(targetDay: number): Date {
     return nextDate;
 }
 
-function getTomorrow(): Date {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
-    return tomorrow;
-}
+
 
 function getEndOfMonth(): Date {
     const now = new Date();

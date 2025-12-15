@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import {
-    Calendar as CalendarIcon,
     Sparkles,
     CheckCircle2,
     Circle,
-    Mic,
-    MoreHorizontal,
     Pencil,
     Save,
     X,

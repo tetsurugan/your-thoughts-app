@@ -21,6 +21,7 @@ Your Thoughts is a mobile-first web app for capturing and managing tasks through
 | 📅 **Calendar Sync** | Push tasks to Google Calendar |
 | 📴 **Offline Mode** | Works without internet |
 | 📄 **Export PDF** | Download formatted task list |
+| ✨ **Break It Down** | AI decomposes complex tasks into actionable steps |
 
 ---
 

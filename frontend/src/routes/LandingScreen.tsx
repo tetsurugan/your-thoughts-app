@@ -1,13 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { ArrowRight, Mic, CheckCircle2, Calendar, Sparkles, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Mic, CheckCircle2, Sparkles, ShieldCheck } from 'lucide-react';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useAuth } from '../context/AuthContext';
 import { activateDemoMode } from '../utils/demoMode';
 
 export const LandingScreen = () => {
     const navigate = useNavigate();
-    const { loginAsGuest, logout } = useAuth();
+    const { loginAsGuest } = useAuth();
     const [isDemoLoading, setIsDemoLoading] = useState(false);
     const demoInitRef = useRef(false);
 
