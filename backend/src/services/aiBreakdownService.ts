@@ -69,7 +69,7 @@ Today is: ${new Date().toISOString().split('T')[0]}`
     // 2. Try Gemini (if OpenAI failed)
     if (tasks.length === 0 && gemini) {
         try {
-            const model = gemini.getGenerativeModel({ model: "gemini-pro" });
+            const model = gemini.getGenerativeModel({ model: "gemini-2.5-flash" });
             const today = new Date().toISOString().split('T')[0];
             const prompt = `Parse this text into separate tasks. For each task, extract title, dueAt (ISO datetime if time mentioned, use ${today} for today), and category (legal/benefits/health/work/personal).
 
@@ -210,7 +210,7 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
     // 2. Try Gemini (if OpenAI failed or missing)
     if (subtasks.length === 0 && gemini) {
         try {
-            const model = gemini.getGenerativeModel({ model: "gemini-pro" });
+            const model = gemini.getGenerativeModel({ model: "gemini-2.5-flash" });
             const prompt = `Break down the task "${taskTitle}" into 3-5 simple, actionable subtasks. Return ONLY a raw JSON array of strings. Example: ["Step 1", "Step 2"]`;
 
             const result = await model.generateContent(prompt);
