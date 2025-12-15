@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, Circle, AlertCircle, Volume2, VolumeX, Sparkles, Repeat } from 'lucide-react';
+import { CheckCircle2, Circle, AlertCircle, Volume2, VolumeX, Sparkles, Repeat, Pencil, Save, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { useApi } from '../hooks/useApi';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
@@ -34,6 +34,10 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
     const [removingFromCal, setRemovingFromCal] = useState(false);
     const [calSuccess, setCalSuccess] = useState(!!task.googleEventId);
     const [isBreakingDown, setIsBreakingDown] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editTitle, setEditTitle] = useState(task.title);
+    const [editDueAt, setEditDueAt] = useState(task.dueAt || '');
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleReadAloud = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -92,6 +96,37 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
         }
     };
 
+    const handleStartEdit = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEditTitle(task.title);
+        setEditDueAt(task.dueAt ? new Date(task.dueAt).toISOString().slice(0, 16) : '');
+        setIsEditing(true);
+    };
+
+    const handleCancelEdit = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsEditing(false);
+    };
+
+    const handleSaveEdit = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!editTitle.trim()) return;
+        setIsSaving(true);
+        try {
+            await api.updateTask(task.id, {
+                title: editTitle.trim(),
+                dueAt: editDueAt ? new Date(editDueAt).toISOString() : null
+            });
+            setIsEditing(false);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error(err);
+            alert('Failed to save changes');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const hasSubtasks = task.subtasks && task.subtasks.length > 0;
     const isLegal = task.category === 'legal';
 
@@ -106,17 +141,39 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                 </button>
 
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between">
-                        <h3 className={`text-lg font-semibold truncate pr-2 ${isCompleted ? 'text-slate-500 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
-                            {task.title}
-                        </h3>
-                        <button
-                            onClick={handleReadAloud}
-                            className={`p-1.5 rounded-full transition-colors flex-shrink-0 ${isReading ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-blue-500'}`}
-                            title={isReading ? 'Stop reading' : 'Read aloud'}
-                        >
-                            {isReading ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                        </button>
+                    <div className="flex items-start justify-between gap-2">
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex-1 text-lg font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 focus:border-blue-500 focus:outline-none"
+                                autoFocus
+                            />
+                        ) : (
+                            <h3 className={`text-lg font-semibold truncate pr-2 ${isCompleted ? 'text-slate-500 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
+                                {task.title}
+                            </h3>
+                        )}
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                            {!isCompleted && !isEditing && (
+                                <button
+                                    onClick={handleStartEdit}
+                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                                    title="Edit task"
+                                >
+                                    <Pencil className="w-4 h-4" />
+                                </button>
+                            )}
+                            <button
+                                onClick={handleReadAloud}
+                                className={`p-1.5 rounded-full transition-colors ${isReading ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-blue-500'}`}
+                                title={isReading ? 'Stop reading' : 'Read aloud'}
+                            >
+                                {isReading ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                            </button>
+                        </div>
                     </div>
 
                     {task.description && (
@@ -138,13 +195,50 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                             </div>
                         )}
 
-                        {task.dueAt && (
+                        {task.dueAt && !isEditing && (
                             <span className={`text-xs font-medium flex items-center gap-1 ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-slate-400'}`}>
                                 {isOverdue && <AlertCircle className="w-3 h-3" />}
                                 Due: {format(new Date(task.dueAt), 'MMM d, h:mm a')}
                             </span>
                         )}
                     </div>
+
+                    {/* Edit mode: date picker */}
+                    {isEditing && (
+                        <div className="mt-3 space-y-3">
+                            <div>
+                                <label className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Due Date & Time</label>
+                                <input
+                                    type="datetime-local"
+                                    value={editDueAt}
+                                    onChange={(e) => setEditDueAt(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-full text-sm bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 focus:border-blue-500 focus:outline-none"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleSaveEdit}
+                                    disabled={isSaving || !editTitle.trim()}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {isSaving ? (
+                                        <div className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></div>
+                                    ) : (
+                                        <Save className="w-3 h-3" />
+                                    )}
+                                    Save
+                                </button>
+                                <button
+                                    onClick={handleCancelEdit}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600"
+                                >
+                                    <X className="w-3 h-3" />
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Actions Row */}
                     {!isCompleted && (
