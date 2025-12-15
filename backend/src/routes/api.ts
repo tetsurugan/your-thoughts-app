@@ -49,6 +49,7 @@ router.post('/documents', authenticateToken, documentController.createDocument);
 router.post('/documents/:id/parse', authenticateToken, documentController.parseDocument);
 
 // Calendar (Protected)
+router.get('/calendar/status', authenticateToken, calendarController.getStatus);
 router.get('/calendar/google/connect', authenticateToken, calendarController.connectGoogle);
 router.get('/calendar/google/callback', calendarController.googleCallback);
 router.post('/calendar/events', authenticateToken, calendarController.createEvent);

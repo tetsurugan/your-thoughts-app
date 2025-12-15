@@ -58,6 +58,13 @@ function getFutureDate(daysOffset: number): Date {
 export const seedDemoTasks = async (userId: string, purpose: string) => {
     if (purpose !== 'legal') return; // Only seeding legal for now
 
+    // Check if user already has tasks - skip seeding if they do
+    const existingTasks = await prisma.task.count({ where: { userId } });
+    if (existingTasks > 0) {
+        console.log(`[DemoSeeding] User ${userId} already has ${existingTasks} tasks, skipping seed`);
+        return;
+    }
+
     console.log(`[DemoSeeding] Seeding tasks for User ${userId}`);
 
     for (const task of DEMO_LEGAL_TASKS) {
