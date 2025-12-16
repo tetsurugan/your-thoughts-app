@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTasks } from '../hooks/useTasks';
 import { useFolders } from '../hooks/useFolders';
 import { useApi } from '../hooks/useApi';
@@ -17,6 +17,12 @@ export const TaskListScreen = () => {
     const [activeTab, setActiveTab] = useState<'all' | 'today' | 'upcoming' | 'completed'>('all');
     const { tasks, loading, fetchTasks } = useTasks();
     const { isOnline, isSyncing } = useSync(); // Now using isOnline from useSync for real-time status
+
+    // Force fetch tasks when component mounts (ensures fresh data after demo login)
+    useEffect(() => {
+        console.log('[TaskListScreen] Mounting, forcing task fetch...');
+        fetchTasks();
+    }, []); // Empty deps = run once on mount
 
     // Filter tasks locally since we are caching everything
     const today = new Date();
