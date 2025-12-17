@@ -186,7 +186,7 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
                 messages: [
                     {
                         role: 'system',
-                        content: `You break down REAL tasks into 2-3 simple steps.
+                        content: `You break down REAL tasks into 2-4 short steps.
 
 RULES:
 1. Return { "canBreakdown": false, "subtasks": [] } if:
@@ -195,15 +195,14 @@ RULES:
    - It's vague nonsense ("thing", "stuff", "1 2 3 4")
 
 2. If it IS a real task, return { "canBreakdown": true, "subtasks": [...] } with:
-   - Only 2-3 steps (never more than 3)
-   - Each step is 3-5 words max
-   - Simple action verbs ("Call", "Get", "Check", "Set")
-   - No explanations, just the action
+   - 2-4 steps max
+   - Each step is short but clear (under 10 words)
+   - No long explanations
 
-Example good subtasks: ["Confirm date and time", "Gather documents", "Set reminder"]
-Example bad subtasks: ["First, you should confirm the date and time of your appointment"]
+Example good: ["Confirm date and time", "Gather required documents", "Set morning alarm"]
+Example bad: ["First, you should confirm the date and time of your appointment by calling the office"]
 
-Be STRICT. When in doubt, return canBreakdown: false.`
+Be STRICT about garbage input. When in doubt, return canBreakdown: false.`
                     },
                     {
                         role: 'user',
@@ -237,14 +236,13 @@ Is this a REAL task? Return JSON only.
 
 If NO (test input, garbage, already simple): { "canBreakdown": false, "subtasks": [] }
 
-If YES, return 2-3 SHORT steps:
-{ "canBreakdown": true, "subtasks": ["Step in 3-5 words", "Another short step"] }
+If YES, return 2-4 SHORT steps:
+{ "canBreakdown": true, "subtasks": ["Short clear step", "Another step"] }
 
 Rules:
-- Max 3 subtasks
-- Each step is 3-5 words
-- Simple verbs: Call, Get, Check, Set, Confirm
-- No explanations
+- 2-4 subtasks max
+- Each step under 10 words
+- Clear and actionable
 
 Return ONLY the JSON.`;
 
