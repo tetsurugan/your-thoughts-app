@@ -159,17 +159,26 @@ export const LandingScreen = () => {
             <footer className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-center gap-6 mb-4">
-                        <button onClick={() => alert('Privacy Policy\n\nYour Thoughts App respects your privacy.\n\n• We only collect data necessary to provide the service\n• Your tasks are stored securely and encrypted\n• We never sell your data to third parties\n• You can delete your account and data at any time\n\nContact us at privacy@yourthoughts.app for questions.')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                        <a
+                            href="mailto:privacy@yourthoughts.app?subject=Privacy%20Inquiry"
+                            className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        >
                             Privacy
-                        </button>
-                        <button onClick={() => alert('Terms of Service\n\nBy using Your Thoughts App, you agree to:\n\n• Use the service for lawful purposes only\n• Maintain the security of your account\n• Not attempt to access other users\' data\n• Respect intellectual property rights\n\nWe reserve the right to terminate accounts that violate these terms.')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                        </a>
+                        <a
+                            href="mailto:legal@yourthoughts.app?subject=Terms%20of%20Service%20Question"
+                            className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        >
                             Terms
-                        </button>
-                        <button onClick={() => alert('Contact Us\n\nHave questions or feedback?\n\n📧 Email: hello@yourthoughts.app\n💬 Twitter: @YourThoughtsApp\n\nWe\'d love to hear from you!')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                        </a>
+                        <a
+                            href="mailto:hello@yourthoughts.app?subject=Hello%20from%20Your%20Thoughts%20User"
+                            className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        >
                             Contact
-                        </button>
+                        </a>
                     </div>
-                    <p>© 2025 Your Thoughts App • Built with ❤️ for people who think a lot</p>
+                    <p>© 2025 Your Thoughts App</p>
                 </div>
             </footer>
         </div>
