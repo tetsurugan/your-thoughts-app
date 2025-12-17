@@ -61,7 +61,18 @@ export const getTasks = async (req: Request, res: Response) => {
 // PATCH /api/tasks/:id
 export const updateTask = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { status, title, dueAt, isRecurring, recurrenceInterval } = req.body;
+    let { status, title, dueAt, isRecurring, recurrenceInterval } = req.body;
+
+    // Sanitize title if provided
+    if (title !== undefined) {
+        title = typeof title === 'string' ? title.trim() : '';
+        if (title.length === 0) {
+            return res.status(400).json({ error: 'Task title cannot be empty' });
+        }
+        if (title.length > 500) {
+            title = title.substring(0, 500);
+        }
+    }
 
     try {
         // Get current task to check if title is changing
@@ -202,14 +213,30 @@ export const createTask = async (req: Request, res: Response) => {
     if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    const { title, description, category, dueAt, isRecurring, recurrenceInterval, sourceType } = req.body;
+    let { title, description, category, dueAt, isRecurring, recurrenceInterval, sourceType } = req.body;
+
+    // Input validation and sanitization
+    title = typeof title === 'string' ? title.trim() : '';
+    description = typeof description === 'string' ? description.trim() : '';
+
+    if (!title || title.length === 0) {
+        return res.status(400).json({ error: 'Task title is required' });
+    }
+
+    // Max length limits
+    if (title.length > 500) {
+        title = title.substring(0, 500);
+    }
+    if (description && description.length > 2000) {
+        description = description.substring(0, 2000);
+    }
 
     try {
         const task = await prisma.task.create({
             data: {
                 userId,
                 title,
-                description,
+                description: description || null,
                 category: category || 'general',
                 dueAt: dueAt ? new Date(dueAt) : null,
                 isRecurring: isRecurring || false,
@@ -257,15 +284,22 @@ export const deleteTask = async (req: Request, res: Response) => {
 
 // POST /api/tasks/detect - Detect multiple tasks from input text
 export const detectTasks = async (req: Request, res: Response) => {
-    const { text } = req.body;
+    let { text } = req.body;
     const userId = req.user?.userId;
 
     if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    if (!text || typeof text !== 'string') {
+    // Input validation
+    text = typeof text === 'string' ? text.trim() : '';
+    if (!text || text.length === 0) {
         return res.status(400).json({ error: 'Text input required' });
+    }
+
+    // Max length limit
+    if (text.length > 5000) {
+        text = text.substring(0, 5000);
     }
 
     try {

@@ -256,16 +256,23 @@ Return ONLY the JSON object, no other text.`;
         subtasks = match ? TEMPLATES[match] : TEMPLATES['default'];
     }
 
-    // 4. Save to DB
+    // 4. Save to DB (only if task still exists - user might have deleted it)
     if (subtasks.length > 0) {
-        // Delete existing subtasks first? Or append? Let's clear for now to avoid duplicates on re-run
+        // Verify task still exists before saving
+        const taskExists = await prisma.task.findUnique({ where: { id: taskId } });
+        if (!taskExists) {
+            console.log(`[Breakdown] Task ${taskId} was deleted during processing, skipping subtask save`);
+            return subtasks;
+        }
+
+        // Delete existing subtasks first to avoid duplicates on re-run
         await prisma.subtask.deleteMany({ where: { taskId } });
 
         for (let i = 0; i < subtasks.length; i++) {
             await prisma.subtask.create({
                 data: {
                     taskId,
-                    label: subtasks[i],
+                    label: subtasks[i].substring(0, 500), // Limit subtask length too
                     orderIndex: i,
                     done: false
                 }
