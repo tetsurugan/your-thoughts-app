@@ -137,7 +137,14 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                 dueAt: editDueAt ? new Date(editDueAt).toISOString() : null
             });
             setIsEditing(false);
+
+            // Immediate refresh for the edit itself
             if (onRefresh) onRefresh();
+
+            // Delayed refresh to catch AI-generated subtasks (runs in background)
+            setTimeout(() => {
+                if (onRefresh) onRefresh();
+            }, 3000);
         } catch (err) {
             console.error(err);
             alert('Failed to save changes');
