@@ -10,6 +10,9 @@ import { LoginScreen } from './routes/LoginScreen';
 import { SignupScreen } from './routes/SignupScreen';
 import { EditProfileScreen } from './routes/EditProfileScreen';
 import { LandingScreen } from './routes/LandingScreen';
+import { PrivacyScreen } from './routes/PrivacyScreen';
+import { TermsScreen } from './routes/TermsScreen';
+import { ContactScreen } from './routes/ContactScreen';
 import { useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useSync } from './hooks/useSync';
@@ -45,6 +48,9 @@ function App() {
               <Route path="/signup" element={<PublicRoute><SignupScreen /></PublicRoute>} />
 
               <Route path="/" element={<PublicRoute><LandingScreen /></PublicRoute>} />
+              <Route path="/privacy" element={<PrivacyScreen />} />
+              <Route path="/terms" element={<TermsScreen />} />
+              <Route path="/contact" element={<ContactScreen />} />
 
               <Route path="/capture" element={<ProtectedRoute><CaptureScreen /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><TaskListScreen /></ProtectedRoute>} />

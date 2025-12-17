@@ -159,24 +159,24 @@ export const LandingScreen = () => {
             <footer className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-center gap-6 mb-4">
-                        <a
-                            href="mailto:privacy@yourthoughts.app?subject=Privacy%20Inquiry"
+                        <Link
+                            to="/privacy"
                             className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
                         >
                             Privacy
-                        </a>
-                        <a
-                            href="mailto:legal@yourthoughts.app?subject=Terms%20of%20Service%20Question"
+                        </Link>
+                        <Link
+                            to="/terms"
                             className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
                         >
                             Terms
-                        </a>
-                        <a
-                            href="mailto:hello@yourthoughts.app?subject=Hello%20from%20Your%20Thoughts%20User"
+                        </Link>
+                        <Link
+                            to="/contact"
                             className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
                         >
                             Contact
-                        </a>
+                        </Link>
                     </div>
                     <p>© 2025 Your Thoughts App</p>
                 </div>
