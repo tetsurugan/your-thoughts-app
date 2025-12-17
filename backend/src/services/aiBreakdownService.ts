@@ -176,6 +176,20 @@ const TEMPLATES: Record<string, string[]> = {
 export async function breakdownTask(taskId: string, taskTitle: string): Promise<string[]> {
     console.log(`Breaking down task: "${taskTitle}"`);
 
+    // Handle very short or test inputs with helpful generic steps
+    const normalizedTitle = taskTitle.toLowerCase().trim();
+    if (normalizedTitle.length < 4 ||
+        ['test', 'asdf', 'xxx', 'aaa', '123', 'todo', 'task'].includes(normalizedTitle)) {
+        console.log('Task title too vague, returning guidance steps');
+        return [
+            'Define what you actually need to accomplish',
+            'Identify the first concrete action you can take',
+            'Set a specific time to work on this',
+            'Gather any materials or information needed',
+            'Take that first action'
+        ];
+    }
+
     let subtasks: string[] = [];
 
     // 1. Try OpenAI
@@ -186,11 +200,14 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are a helpful assistant that breaks down complex tasks into 3-5 simple, actionable subtasks. Return only a JSON array of strings.'
+                        content: `You are a helpful assistant that breaks down tasks into 3-5 simple, actionable subtasks. 
+Each subtask should be specific and actionable - something someone can actually do.
+If the task is vague, interpret it in the most practical way possible.
+Return only a JSON object with a "subtasks" array of strings.`
                     },
                     {
                         role: 'user',
-                        content: `Break down this task: "${taskTitle}"`
+                        content: `Break down this task into clear, actionable steps: "${taskTitle}"`
                     }
                 ],
                 response_format: { type: "json_object" }
@@ -211,7 +228,10 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
     if (subtasks.length === 0 && gemini) {
         try {
             const model = gemini.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = `Break down the task "${taskTitle}" into 3-5 simple, actionable subtasks. Return ONLY a raw JSON array of strings. Example: ["Step 1", "Step 2"]`;
+            const prompt = `Break down the task "${taskTitle}" into 3-5 clear, actionable subtasks. 
+Each subtask should be something concrete that a person can actually do.
+If the task seems vague, interpret it practically.
+Return ONLY a raw JSON array of strings. Example: ["Call the office to confirm", "Prepare documents", "Set a reminder"]`;
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
