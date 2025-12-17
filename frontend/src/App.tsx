@@ -13,6 +13,7 @@ import { LandingScreen } from './routes/LandingScreen';
 import { PrivacyScreen } from './routes/PrivacyScreen';
 import { TermsScreen } from './routes/TermsScreen';
 import { ContactScreen } from './routes/ContactScreen';
+import { DonateScreen } from './routes/DonateScreen';
 import { useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { useSync } from './hooks/useSync';
@@ -51,6 +52,7 @@ function App() {
               <Route path="/privacy" element={<PrivacyScreen />} />
               <Route path="/terms" element={<TermsScreen />} />
               <Route path="/contact" element={<ContactScreen />} />
+              <Route path="/donate" element={<DonateScreen />} />
 
               <Route path="/capture" element={<ProtectedRoute><CaptureScreen /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><TaskListScreen /></ProtectedRoute>} />

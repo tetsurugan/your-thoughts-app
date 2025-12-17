@@ -177,6 +177,12 @@ export const LandingScreen = () => {
                         >
                             Contact
                         </Link>
+                        <Link
+                            to="/donate"
+                            className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+                        >
+                            💜 Donate
+                        </Link>
                     </div>
                     <p>© 2025 Your Thoughts App</p>
                 </div>
