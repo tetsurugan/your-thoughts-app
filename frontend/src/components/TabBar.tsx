@@ -6,7 +6,7 @@ export const TabBar = () => {
         <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-slate-800/50 pb-safe-nav pt-2 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
             <div className="flex justify-around items-center h-16">
                 <NavLink
-                    to="/"
+                    to="/capture"
                     className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                     <Mic className={`w-7 h-7 mb-1 ${({ isActive }: any) => isActive ? 'fill-blue-100 dark:fill-blue-900/30' : ''}`} />
