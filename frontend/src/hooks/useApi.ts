@@ -16,7 +16,7 @@ export const useApi = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const getTasks = async (scope: string = 'today') => {
+    const getTasks = async (scope: string = '') => {
         setLoading(true);
         try {
             const res = await fetch(`${API_BASE}/api/tasks?scope=${scope}`, {
