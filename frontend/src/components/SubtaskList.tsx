@@ -51,7 +51,7 @@ export const SubtaskList = ({ subtasks, onUpdate }: SubtaskListProps) => {
             {/* Progress Bar */}
             <div className="w-full h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
                 <div
-                    className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                    className="h-full bg-violet-500 transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                 />
             </div>
@@ -68,7 +68,7 @@ export const SubtaskList = ({ subtasks, onUpdate }: SubtaskListProps) => {
                         className={`w-full flex items-start gap-3 p-2 rounded-lg text-left transition-all ${s.done ? 'bg-gray-50 text-gray-400 opacity-80' : 'hover:bg-slate-50 text-slate-700'
                             }`}
                     >
-                        <div className={`mt-0.5 transition-colors ${s.done ? 'text-green-500' : 'text-slate-300 group-hover:text-blue-400'
+                        <div className={`mt-0.5 transition-colors ${s.done ? 'text-green-500' : 'text-slate-300 group-hover:text-violet-400'
                             }`}>
                             {s.done ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
                         </div>

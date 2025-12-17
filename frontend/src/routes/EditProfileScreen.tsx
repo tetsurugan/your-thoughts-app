@@ -138,7 +138,7 @@ export const EditProfileScreen = () => {
                                 type="text"
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
                             />
                         </div>
                         <div className="space-y-1">
@@ -147,7 +147,7 @@ export const EditProfileScreen = () => {
                                 type="email"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
                             />
                         </div>
                         <PrimaryButton disabled={isLoading} type="submit" label={isLoading ? 'Saving...' : 'Save Changes'} />
@@ -162,7 +162,7 @@ export const EditProfileScreen = () => {
                                 type="password"
                                 value={currentPassword}
                                 onChange={e => setCurrentPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
                             />
                         </div>
                         <div className="space-y-1">
@@ -171,7 +171,7 @@ export const EditProfileScreen = () => {
                                 type="password"
                                 value={newPassword}
                                 onChange={e => setNewPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
                             />
                         </div>
                         <div className="space-y-1">
@@ -180,7 +180,7 @@ export const EditProfileScreen = () => {
                                 type="password"
                                 value={confirmPassword}
                                 onChange={e => setConfirmPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
                             />
                         </div>
                         <PrimaryButton disabled={isLoading} type="submit" label={isLoading ? 'Updating...' : 'Update Password'} />

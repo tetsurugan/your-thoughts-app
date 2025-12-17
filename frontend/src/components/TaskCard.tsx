@@ -162,7 +162,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
-                                className="flex-1 text-lg font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 focus:border-blue-500 focus:outline-none"
+                                className="flex-1 text-lg font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 focus:border-violet-500 focus:outline-none"
                                 autoFocus
                             />
                         ) : (
@@ -174,7 +174,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                             {!isCompleted && !isEditing && (
                                 <button
                                     onClick={handleStartEdit}
-                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                                    className="p-1.5 rounded-full transition-colors text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/30"
                                     title="Edit task"
                                 >
                                     <Pencil className="w-4 h-4" />
@@ -182,7 +182,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                             )}
                             <button
                                 onClick={handleReadAloud}
-                                className={`p-1.5 rounded-full transition-colors ${isReading ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-blue-500'}`}
+                                className={`p-1.5 rounded-full transition-colors ${isReading ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600' : 'text-gray-400 hover:text-violet-500'}`}
                                 title={isReading ? 'Stop reading' : 'Read aloud'}
                             >
                                 {isReading ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -227,14 +227,14 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                                     value={editDueAt}
                                     onChange={(e) => setEditDueAt(e.target.value)}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="w-full text-sm bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 focus:border-blue-500 focus:outline-none"
+                                    className="w-full text-sm bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 focus:border-violet-500 focus:outline-none"
                                 />
                             </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleSaveEdit}
                                     disabled={isSaving || !editTitle.trim()}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 text-white text-xs font-bold rounded-lg hover:bg-violet-700 disabled:opacity-50"
                                 >
                                     {isSaving ? (
                                         <div className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></div>
@@ -273,7 +273,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
                                     </>
                                 ) : (
                                     <IconButton
-                                        icon={addingToCal ? <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full" /> : <div className="text-sm font-bold">📅 Add to calendar</div>}
+                                        icon={addingToCal ? <div className="animate-spin w-4 h-4 border-2 border-violet-600 border-t-transparent rounded-full" /> : <div className="text-sm font-bold">📅 Add to calendar</div>}
                                         label=""
                                         onClick={handleAddToCalendar}
                                         className="text-sm"

@@ -48,7 +48,7 @@ export const LoginScreen = () => {
                                 required
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
                             />
                         </div>
                         <div className="relative">
@@ -59,7 +59,7 @@ export const LoginScreen = () => {
                                 required
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
                             />
                         </div>
                     </div>
@@ -115,7 +115,7 @@ export const LoginScreen = () => {
                 <div className="text-center">
                     <p className="text-sm text-gray-500">
                         Don't have an account?{' '}
-                        <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-700">
+                        <Link to="/signup" className="font-semibold text-violet-600 hover:text-violet-700">
                             Sign up
                         </Link>
                     </p>

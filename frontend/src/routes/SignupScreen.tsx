@@ -67,7 +67,7 @@ export const SignupScreen = () => {
                                 required
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
+                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
                             />
                         </div>
                         <div className="relative">
@@ -78,7 +78,7 @@ export const SignupScreen = () => {
                                 required
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
+                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
                             />
                         </div>
                         <div className="relative">
@@ -89,7 +89,7 @@ export const SignupScreen = () => {
                                 required
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
+                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400 dark:text-white"
                             />
                         </div>
                     </div>
@@ -104,8 +104,8 @@ export const SignupScreen = () => {
                                     type="button"
                                     onClick={() => setAccountPurpose(opt.value)}
                                     className={`flex items-start gap-2 p-3 rounded-xl border-2 transition-all text-left ${accountPurpose === opt.value
-                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
-                                        : 'border-gray-200 dark:border-slate-700 hover:border-blue-300'
+                                        ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30'
+                                        : 'border-gray-200 dark:border-slate-700 hover:border-violet-300'
                                         }`}
                                 >
                                     <div className={`p-1.5 rounded-lg ${opt.color} text-white flex-shrink-0`}>
@@ -159,7 +159,7 @@ export const SignupScreen = () => {
                 <div className="text-center">
                     <p className="text-sm text-gray-500 dark:text-slate-400">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700">
+                        <Link to="/login" className="font-semibold text-violet-600 hover:text-violet-700">
                             Sign in
                         </Link>
                     </p>

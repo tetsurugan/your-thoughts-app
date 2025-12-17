@@ -227,7 +227,7 @@ export const CaptureScreen = () => {
                             <CategoryIcon category={ocrResult.task.category} />
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">{ocrResult.task.title}</h3>
-                                {ocrResult.task.dueAt && <p className="text-blue-600 font-medium mt-1">Due: {format(new Date(ocrResult.task.dueAt), 'MMM d, h:mm a')}</p>}
+                                {ocrResult.task.dueAt && <p className="text-violet-600 font-medium mt-1">Due: {format(new Date(ocrResult.task.dueAt), 'MMM d, h:mm a')}</p>}
                             </div>
                         </div>
                         <p className="mt-4 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-lg text-sm">
@@ -271,14 +271,14 @@ export const CaptureScreen = () => {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Type here..."
-                        className="flex-1 w-full p-5 text-xl rounded-2xl border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 resize-y mb-6 shadow-sm min-h-[50vh]"
+                        className="flex-1 w-full p-5 text-xl rounded-2xl border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900 resize-y mb-6 shadow-sm min-h-[50vh]"
                         autoFocus
                     />
                     <div className="flex justify-between items-center mb-6 sticky bottom-6 bg-slate-100 dark:bg-slate-950 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-slate-800 z-10">
                         <select
                             value={recurrenceInterval || ''}
                             onChange={(e) => setRecurrenceInterval(e.target.value || null)}
-                            className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm px-3 py-2 outline-none focus:border-blue-500"
+                            className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm px-3 py-2 outline-none focus:border-violet-500"
                         >
                             <option value="">No Repeat</option>
                             <option value="daily">Daily</option>
@@ -316,7 +316,7 @@ export const CaptureScreen = () => {
                             <div
                                 key={index}
                                 className={`p-4 rounded-xl border-2 transition-all ${task.selected
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                    ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/20'
                                     : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
                                     }`}
                             >
@@ -325,7 +325,7 @@ export const CaptureScreen = () => {
                                     <button
                                         onClick={() => toggleTaskSelection(index)}
                                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-2 flex-shrink-0 ${task.selected
-                                            ? 'border-blue-500 bg-blue-500'
+                                            ? 'border-violet-500 bg-violet-500'
                                             : 'border-gray-300 dark:border-slate-600'
                                             }`}
                                     >
@@ -339,7 +339,7 @@ export const CaptureScreen = () => {
                                             value={task.title}
                                             onChange={(e) => updateTaskTitle(index, e.target.value)}
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-full font-semibold text-slate-900 dark:text-white bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-blue-500 focus:outline-none py-1 px-0"
+                                            className="w-full font-semibold text-slate-900 dark:text-white bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-violet-500 focus:outline-none py-1 px-0"
                                         />
 
                                         <div className="flex flex-wrap items-center gap-2">
@@ -352,7 +352,7 @@ export const CaptureScreen = () => {
                                             {/* Time display with AM/PM toggle */}
                                             {task.dueAt && (
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-xs text-blue-600 dark:text-blue-400">
+                                                    <span className="text-xs text-violet-600 dark:text-violet-400">
                                                         Due: {format(new Date(task.dueAt), 'h:mm')}
                                                     </span>
                                                     {task.needsAmPm && (
@@ -364,7 +364,7 @@ export const CaptureScreen = () => {
                                                         </button>
                                                     )}
                                                     {!task.needsAmPm && (
-                                                        <span className="text-xs text-blue-600 dark:text-blue-400">
+                                                        <span className="text-xs text-violet-600 dark:text-violet-400">
                                                             {format(new Date(task.dueAt), 'a')}
                                                         </span>
                                                     )}
@@ -400,7 +400,7 @@ export const CaptureScreen = () => {
                         <p className="text-slate-500 dark:text-slate-400 font-medium text-sm uppercase tracking-wide">Welcome Back</p>
                         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{user?.name?.split(' ')[0] || 'Friend'}</h1>
                     </div>
-                    <Link to="/settings" className="p-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shadow-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                    <Link to="/settings" className="p-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shadow-sm text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400">
                         <Settings className="w-6 h-6" />
                     </Link>
                 </header>

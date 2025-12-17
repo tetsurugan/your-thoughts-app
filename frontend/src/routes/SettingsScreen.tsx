@@ -124,7 +124,7 @@ export const SettingsScreen = () => {
                     <Link to="/settings/profile" className="block">
                         <div className="bg-white rounded-xl border border-gray-200 p-6 flex items-center justify-between shadow-sm hover:bg-slate-50 transition-colors cursor-pointer active:scale-[0.98]">
                             <div className="flex items-center gap-4">
-                                <div className="bg-blue-100 p-3 rounded-full text-blue-600">
+                                <div className="bg-violet-100 dark:bg-violet-900/30 p-3 rounded-full text-violet-600 dark:text-violet-400">
                                     <User className="w-8 h-8" />
                                 </div>
                                 <div>

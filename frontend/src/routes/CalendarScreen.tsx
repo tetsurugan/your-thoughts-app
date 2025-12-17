@@ -93,7 +93,7 @@ export const CalendarScreen = () => {
                     </h1>
                     <button
                         onClick={goToToday}
-                        className="px-3 py-1.5 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                        className="px-3 py-1.5 text-sm font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
                     >
                         Today
                     </button>
@@ -163,7 +163,7 @@ export const CalendarScreen = () => {
 
                     {loading ? (
                         <div className="p-8 text-center text-slate-500">
-                            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                            <div className="w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                             Loading...
                         </div>
                     ) : selectedDateTasks.length === 0 ? (
@@ -190,13 +190,13 @@ export const CalendarScreen = () => {
                                             {isCompleted ? (
                                                 <CheckCircle2 className="w-6 h-6 text-green-500" />
                                             ) : (
-                                                <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 hover:text-blue-500 transition-colors" />
+                                                <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 hover:text-violet-500 transition-colors" />
                                             )}
                                         </button>
                                         <div className="flex-1 min-w-0">
                                             <p className={`font-medium truncate ${isCompleted
-                                                    ? 'text-slate-400 line-through'
-                                                    : 'text-slate-800 dark:text-slate-200'
+                                                ? 'text-slate-400 line-through'
+                                                : 'text-slate-800 dark:text-slate-200'
                                                 }`}>
                                                 {task.title}
                                             </p>

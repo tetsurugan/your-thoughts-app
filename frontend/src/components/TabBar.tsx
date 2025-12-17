@@ -7,7 +7,7 @@ export const TabBar = () => {
             <div className="flex justify-around items-center h-16">
                 <NavLink
                     to="/"
-                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                     <Mic className={`w-7 h-7 mb-1 ${({ isActive }: any) => isActive ? 'fill-blue-100 dark:fill-blue-900/30' : ''}`} />
                     <span className="text-xs font-bold">Capture</span>
@@ -15,7 +15,7 @@ export const TabBar = () => {
 
                 <NavLink
                     to="/tasks"
-                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                     <ListTodo className="w-7 h-7 mb-1" />
                     <span className="text-xs font-bold">Tasks</span>
@@ -23,7 +23,7 @@ export const TabBar = () => {
 
                 <NavLink
                     to="/calendar"
-                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    className={({ isActive }) => `flex flex-col items-center justify-center w-24 rounded-xl transition-all ${isActive ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
                 >
                     <Calendar className="w-7 h-7 mb-1" />
                     <span className="text-xs font-bold">Calendar</span>
