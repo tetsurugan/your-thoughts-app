@@ -176,18 +176,15 @@ const TEMPLATES: Record<string, string[]> = {
 export async function breakdownTask(taskId: string, taskTitle: string): Promise<string[]> {
     console.log(`Breaking down task: "${taskTitle}"`);
 
-    // Handle very short or test inputs with helpful generic steps
+    // Handle very short or single-word inputs - they're already simple enough
     const normalizedTitle = taskTitle.toLowerCase().trim();
-    if (normalizedTitle.length < 4 ||
-        ['test', 'asdf', 'xxx', 'aaa', '123', 'todo', 'task'].includes(normalizedTitle)) {
-        console.log('Task title too vague, returning guidance steps');
-        return [
-            'Define what you actually need to accomplish',
-            'Identify the first concrete action you can take',
-            'Set a specific time to work on this',
-            'Gather any materials or information needed',
-            'Take that first action'
-        ];
+    const wordCount = normalizedTitle.split(/\s+/).filter(w => w.length > 0).length;
+
+    // If it's just 1 word or a known test/placeholder word, it can't be broken down further
+    if (wordCount <= 1 ||
+        ['test', 'asdf', 'xxx', 'aaa', '123', 'todo', 'task', 'note'].includes(normalizedTitle)) {
+        console.log('Task is too simple to break down (single word or placeholder)');
+        return []; // Empty array triggers "already simple enough" message in frontend
     }
 
     let subtasks: string[] = [];
