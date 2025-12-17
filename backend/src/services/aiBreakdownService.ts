@@ -176,17 +176,6 @@ const TEMPLATES: Record<string, string[]> = {
 export async function breakdownTask(taskId: string, taskTitle: string): Promise<string[]> {
     console.log(`Breaking down task: "${taskTitle}"`);
 
-    // Handle very short or single-word inputs - they're already simple enough
-    const normalizedTitle = taskTitle.toLowerCase().trim();
-    const wordCount = normalizedTitle.split(/\s+/).filter(w => w.length > 0).length;
-
-    // If it's just 1 word or a known test/placeholder word, it can't be broken down further
-    if (wordCount <= 1 ||
-        ['test', 'asdf', 'xxx', 'aaa', '123', 'todo', 'task', 'note'].includes(normalizedTitle)) {
-        console.log('Task is too simple to break down (single word or placeholder)');
-        return []; // Empty array triggers "already simple enough" message in frontend
-    }
-
     let subtasks: string[] = [];
 
     // 1. Try OpenAI
@@ -197,14 +186,17 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
                 messages: [
                     {
                         role: 'system',
-                        content: `You are a helpful assistant that breaks down tasks into 3-5 simple, actionable subtasks. 
-Each subtask should be specific and actionable - something someone can actually do.
-If the task is vague, interpret it in the most practical way possible.
-Return only a JSON object with a "subtasks" array of strings.`
+                        content: `You help break down tasks into actionable steps.
+
+First, decide: Can this task actually be broken down into multiple steps?
+- If the task is too simple, vague, or meaningless (like "test", "hello", single words without context), return: { "canBreakdown": false, "subtasks": [] }
+- If the task CAN be broken down into 3-5 clear, actionable steps, return: { "canBreakdown": true, "subtasks": ["step 1", "step 2", ...] }
+
+Each subtask should be specific and something a person can actually do.`
                     },
                     {
                         role: 'user',
-                        content: `Break down this task into clear, actionable steps: "${taskTitle}"`
+                        content: `Can this task be broken down? If yes, provide the steps: "${taskTitle}"`
                     }
                 ],
                 response_format: { type: "json_object" }
@@ -213,8 +205,11 @@ Return only a JSON object with a "subtasks" array of strings.`
             const content = response.choices[0].message.content;
             if (content) {
                 const parsed = JSON.parse(content);
-                // Handle various JSON shapes { subtasks: [] } or { steps: [] } or just []
-                subtasks = parsed.subtasks || parsed.steps || parsed.list || [];
+                if (parsed.canBreakdown === false) {
+                    console.log('AI determined task cannot be broken down');
+                    return [];
+                }
+                subtasks = parsed.subtasks || parsed.steps || [];
             }
         } catch (error) {
             console.error('OpenAI Error:', error);
@@ -225,10 +220,13 @@ Return only a JSON object with a "subtasks" array of strings.`
     if (subtasks.length === 0 && gemini) {
         try {
             const model = gemini.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = `Break down the task "${taskTitle}" into 3-5 clear, actionable subtasks. 
-Each subtask should be something concrete that a person can actually do.
-If the task seems vague, interpret it practically.
-Return ONLY a raw JSON array of strings. Example: ["Call the office to confirm", "Prepare documents", "Set a reminder"]`;
+            const prompt = `Analyze this task: "${taskTitle}"
+
+First, decide: Can this task be broken down into multiple actionable steps?
+- If it's too simple, vague, or meaningless (like "test", "hello", single words), respond with: { "canBreakdown": false, "subtasks": [] }
+- If it CAN be broken down, respond with: { "canBreakdown": true, "subtasks": ["step 1", "step 2", "step 3"] }
+
+Return ONLY the JSON object, no other text.`;
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
@@ -236,7 +234,13 @@ Return ONLY a raw JSON array of strings. Example: ["Call the office to confirm",
 
             // Clean up code blocks if Gemini adds them
             const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            subtasks = JSON.parse(cleanText);
+            const parsed = JSON.parse(cleanText);
+
+            if (parsed.canBreakdown === false) {
+                console.log('Gemini determined task cannot be broken down');
+                return [];
+            }
+            subtasks = parsed.subtasks || [];
         } catch (error) {
             console.error('Gemini Error:', error);
         }
