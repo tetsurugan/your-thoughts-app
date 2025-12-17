@@ -15,7 +15,7 @@ export function ThemeToggle() {
             </button>
             <button
                 onClick={() => setTheme('system')}
-                className={`p-1.5 rounded-full transition-all ${theme === 'system' ? 'bg-white shadow text-blue-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                className={`p-1.5 rounded-full transition-all ${theme === 'system' ? 'bg-white shadow text-violet-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
                 title="System Theme"
             >
                 <Monitor className="w-4 h-4" />

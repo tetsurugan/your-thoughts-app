@@ -14,7 +14,7 @@ export const ScopeTabs: React.FC<ScopeTabsProps> = ({ scope, onChange }) => {
                 <button
                     key={s}
                     onClick={() => onChange(s)}
-                    className={`flex-1 py-2 text-sm font-medium rounded-md capitalize transition-all ${scope === s ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                    className={`flex-1 py-2 text-sm font-medium rounded-md capitalize transition-all ${scope === s ? 'bg-white shadow text-violet-600' : 'text-gray-500 hover:text-gray-700'
                         }`}
                 >
                     {s}

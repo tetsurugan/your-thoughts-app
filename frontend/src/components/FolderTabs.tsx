@@ -22,7 +22,7 @@ export const FolderTabs = ({ folders, selectedFolder, onSelect, onCreateFolder }
             <button
                 onClick={() => onSelect(null)}
                 className={`flex-shrink-0 px-4 py-2 rounded-full font-medium text-sm transition-all ${selectedFolder === null
-                    ? 'bg-blue-600 text-white shadow-sm'
+                    ? 'bg-violet-600 text-white shadow-sm'
                     : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
                     }`}
             >
