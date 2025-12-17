@@ -19,6 +19,7 @@ import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { CategoryIcon } from './CategoryIcon';
 import { IconButton } from './IconButton';
 import { SubtaskList } from './SubtaskList';
+import { useToast } from './Toast';
 
 interface TaskCardProps {
     task: {
@@ -41,6 +42,7 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
     const isCompleted = task.status === 'completed';
     const isOverdue = task.dueAt && new Date(task.dueAt) < new Date() && !isCompleted;
     const api = useApi();
+    const { showToast } = useToast();
     const { speak, stop } = useTextToSpeech();
     const [isReading, setIsReading] = useState(false);
     const [addingToCal, setAddingToCal] = useState(false);
@@ -100,11 +102,14 @@ export const TaskCard = ({ task, onToggle, onRefresh }: TaskCardProps) => {
         if (isBreakingDown) return;
         setIsBreakingDown(true);
         try {
-            await api.breakdownTask(task.id);
+            const result = await api.breakdownTask(task.id);
+            if (!result.subtasks || result.subtasks.length === 0) {
+                showToast("This task is already simple enough - no breakdown needed!", 'info');
+            }
             if (onRefresh) onRefresh();
         } catch (err) {
             console.error(err);
-            alert("Could not break down task.");
+            showToast("Couldn't break down this task. Try rephrasing it or breaking it down manually.", 'error');
         } finally {
             setIsBreakingDown(false);
         }

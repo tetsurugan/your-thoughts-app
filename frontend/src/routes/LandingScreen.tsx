@@ -118,9 +118,16 @@ export const LandingScreen = () => {
                         onClick={handleGuest}
                         className="flex-1 px-6 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm flex items-center justify-center gap-2"
                     >
-                        Try Demo Mode
+                        <Mic className="w-5 h-5 text-violet-500" />
+                        Try Demo - Just Talk!
                     </button>
                 </div>
+
+                {/* Demo Hint */}
+                <p className="mt-6 text-sm text-slate-500 dark:text-slate-400 animate-in fade-in duration-1000 delay-300">
+                    👆 Click "Try Demo" and speak naturally — say things like<br />
+                    <span className="italic text-violet-600 dark:text-violet-400">"Meet with PO at 3pm tomorrow"</span> or <span className="italic text-violet-600 dark:text-violet-400">"Call doctor about prescription"</span>
+                </p>
 
                 {/* Features Grid */}
                 <div className="grid md:grid-cols-3 gap-6 mt-24 w-full max-w-5xl text-left animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
@@ -149,13 +156,21 @@ export const LandingScreen = () => {
             </main>
 
             {/* Footer */}
-            <footer className="py-8 text-center text-slate-400 text-sm">
-                <div className="flex items-center justify-center gap-6 mb-4">
-                    <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">Privacy</span>
-                    <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">Terms</span>
-                    <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">Contact</span>
+            <footer className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center justify-center gap-6 mb-4">
+                        <button onClick={() => alert('Privacy Policy\n\nYour Thoughts App respects your privacy.\n\n• We only collect data necessary to provide the service\n• Your tasks are stored securely and encrypted\n• We never sell your data to third parties\n• You can delete your account and data at any time\n\nContact us at privacy@yourthoughts.app for questions.')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            Privacy
+                        </button>
+                        <button onClick={() => alert('Terms of Service\n\nBy using Your Thoughts App, you agree to:\n\n• Use the service for lawful purposes only\n• Maintain the security of your account\n• Not attempt to access other users\' data\n• Respect intellectual property rights\n\nWe reserve the right to terminate accounts that violate these terms.')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            Terms
+                        </button>
+                        <button onClick={() => alert('Contact Us\n\nHave questions or feedback?\n\n📧 Email: hello@yourthoughts.app\n💬 Twitter: @YourThoughtsApp\n\nWe\'d love to hear from you!')} className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            Contact
+                        </button>
+                    </div>
+                    <p>© 2025 Your Thoughts App • Built with ❤️ for people who think a lot</p>
                 </div>
-                <p>© 2025 Your Thoughts App</p>
             </footer>
         </div>
     );
