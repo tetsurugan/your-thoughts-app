@@ -64,6 +64,14 @@ export const updateTask = async (req: Request, res: Response) => {
     const { status, title, dueAt, isRecurring, recurrenceInterval } = req.body;
 
     try {
+        // Get current task to check if title is changing
+        const existingTask = await prisma.task.findUnique({ where: { id } });
+        if (!existingTask) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const titleChanged = title && title !== existingTask.title;
+
         const task = await prisma.task.update({
             where: { id },
             data: {
@@ -74,6 +82,15 @@ export const updateTask = async (req: Request, res: Response) => {
                 ...(recurrenceInterval && { recurrenceInterval })
             }
         });
+
+        // If title changed, regenerate subtasks through AI
+        if (titleChanged) {
+            console.log(`[UpdateTask] Title changed from "${existingTask.title}" to "${title}", regenerating subtasks`);
+            // Run async - don't wait, let it happen in background
+            breakdownTask(id, title).catch(err => {
+                console.error('[UpdateTask] Failed to regenerate subtasks:', err);
+            });
+        }
 
         // SERVER-SIDE RECURRENCE LOGIC
         // When a recurring task is completed, generate the next instance server-side only
