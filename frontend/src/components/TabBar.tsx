@@ -3,7 +3,7 @@ import { Mic, ListTodo, Calendar } from 'lucide-react';
 
 export const TabBar = () => {
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 pb-safe-nav pt-2 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-slate-800/50 pb-safe-nav pt-2 z-50 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
             <div className="flex justify-around items-center h-16">
                 <NavLink
                     to="/"

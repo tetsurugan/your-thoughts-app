@@ -70,9 +70,9 @@ export const LandingScreen = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-violet-950/20 text-slate-900 dark:text-slate-50 flex flex-col">
             {/* Navigation */}
-            <nav className="container mx-auto px-6 py-6 flex justify-between items-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+            <nav className="container mx-auto px-6 py-6 flex justify-between items-center bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/50 sticky top-0 z-50">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                         Y
@@ -85,7 +85,7 @@ export const LandingScreen = () => {
                     <Link to="/login" className="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                         Sign In
                     </Link>
-                    <Link to="/signup" className="hidden sm:block px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold hover:opacity-90 transition-opacity">
+                    <Link to="/signup" className="hidden sm:block px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full text-sm font-bold hover:from-violet-700 hover:to-purple-700 transition-all shadow-lg shadow-violet-500/25">
                         Get Started
                     </Link>
                 </div>
@@ -124,21 +124,21 @@ export const LandingScreen = () => {
 
                 {/* Features Grid */}
                 <div className="grid md:grid-cols-3 gap-6 mt-24 w-full max-w-5xl text-left animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
-                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm">
+                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                         <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center text-violet-600 dark:text-violet-400 mb-4">
                             <Mic className="w-6 h-6" />
                         </div>
                         <h3 className="text-xl font-bold mb-2">Voice First</h3>
                         <p className="text-slate-600 dark:text-slate-400">Speak naturally. We handle the typing, formatting, and sorting for you.</p>
                     </div>
-                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm">
+                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                         <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4">
                             <CheckCircle2 className="w-6 h-6" />
                         </div>
                         <h3 className="text-xl font-bold mb-2">Smart Tasks</h3>
                         <p className="text-slate-600 dark:text-slate-400">AI automatically breaks down complex goals into simple, actionable steps.</p>
                     </div>
-                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm">
+                    <div className="p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm backdrop-blur-sm hover:shadow-lg hover:shadow-green-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                         <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-green-600 dark:text-green-400 mb-4">
                             <ShieldCheck className="w-6 h-6" />
                         </div>
