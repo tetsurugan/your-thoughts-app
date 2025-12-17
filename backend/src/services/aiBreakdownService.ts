@@ -186,22 +186,24 @@ export async function breakdownTask(taskId: string, taskTitle: string): Promise<
                 messages: [
                     {
                         role: 'system',
-                        content: `You help break down REAL tasks into actionable steps.
+                        content: `You break down REAL tasks into 2-3 simple steps.
 
-FIRST, decide if this is a REAL task that needs breaking down:
-- Return { "canBreakdown": false, "subtasks": [] } if:
-  - It's test input ("test", "testing 123", "asdf", "hello", etc.)
-  - It's random text or numbers ("1 2 3 4", "abc xyz")
-  - It's too vague to be actionable ("thing", "stuff", "do it")
-  - It's already simple ("buy milk", "call mom")
-  - It's not a real task someone would actually do
+RULES:
+1. Return { "canBreakdown": false, "subtasks": [] } if:
+   - It's test/garbage input ("test", "testing 123", "asdf")
+   - It's already simple ("buy milk", "call mom")
+   - It's vague nonsense ("thing", "stuff", "1 2 3 4")
 
-- Return { "canBreakdown": true, "subtasks": ["step 1", "step 2", ...] } ONLY if:
-  - It's a legitimate multi-step task
-  - Breaking it down would actually help someone
-  - Each step is specific and actionable
+2. If it IS a real task, return { "canBreakdown": true, "subtasks": [...] } with:
+   - Only 2-3 steps (never more than 3)
+   - Each step is 3-5 words max
+   - Simple action verbs ("Call", "Get", "Check", "Set")
+   - No explanations, just the action
 
-Be STRICT about this. When in doubt, return canBreakdown: false.`
+Example good subtasks: ["Confirm date and time", "Gather documents", "Set reminder"]
+Example bad subtasks: ["First, you should confirm the date and time of your appointment"]
+
+Be STRICT. When in doubt, return canBreakdown: false.`
                     },
                     {
                         role: 'user',
@@ -229,22 +231,22 @@ Be STRICT about this. When in doubt, return canBreakdown: false.`
     if (subtasks.length === 0 && gemini) {
         try {
             const model = gemini.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = `Analyze this input: "${taskTitle}"
+            const prompt = `Task: "${taskTitle}"
 
-Is this a REAL task that can be broken down into multiple steps?
+Is this a REAL task? Return JSON only.
 
-Return { "canBreakdown": false, "subtasks": [] } if:
-- It's test/garbage input ("test", "testing 123", "1 2 3 4", "asdf", etc.)
-- It's too vague or simple ("buy milk", "call mom", "thing")
-- It's not a real actionable task
+If NO (test input, garbage, already simple): { "canBreakdown": false, "subtasks": [] }
 
-Return { "canBreakdown": true, "subtasks": [...] } ONLY if:
-- It's a legitimate complex task
-- Breaking it down actually helps
-- Each step is specific and actionable
+If YES, return 2-3 SHORT steps:
+{ "canBreakdown": true, "subtasks": ["Step in 3-5 words", "Another short step"] }
 
-Be STRICT. When in doubt, return canBreakdown: false.
-Return ONLY the JSON object.`;
+Rules:
+- Max 3 subtasks
+- Each step is 3-5 words
+- Simple verbs: Call, Get, Check, Set, Confirm
+- No explanations
+
+Return ONLY the JSON.`;
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
