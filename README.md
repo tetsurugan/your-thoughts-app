@@ -1,6 +1,8 @@
-# Your Thoughts App
+# Your Thoughts
 
-> **A multimodal task capture PWA** — Say it, type it, or snap it. I'll turn it into tasks and calendar reminders.
+> **A mobile-first, multimodal task capture PWA** — say it, type it, or snap it; get organized tasks, optional AI assist, and calendar hooks.
+
+**Framing (honest and aligned with the product):** Your Thoughts is designed for **low-friction capture**, **plain language**, and people who do better with **simpler, more accessible** workflows. Some affordances are informed by **accessibility and clarity** in communities with **lower digital confidence** (including some **justice-impacted** users), but the app is a **general-purpose** task and note organizer with **optional** legal/school/work presets—not a “justice-only” or corrections product.
 
 [![CI/CD](https://github.com/tetsurugan/your-thoughts-app/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tetsurugan/your-thoughts-app/actions)
 
@@ -8,7 +10,7 @@
 
 ## 🎯 What is This?
 
-Your Thoughts is a mobile-first web app for capturing and managing tasks through natural language. Designed with a **Legal Mode** for people managing probation, court dates, and appointments — but works for anyone.
+Your Thoughts is a **mobile-first** web app for capturing and managing tasks with natural language, voice, photo/OCR, and (when connected) a backend. **Tag presets** (e.g. legal, school, work) are there for people juggling **court, probation, or appointments**—and for anyone who wants quick structure. The app is for **everyday** to-dos and heavier logistics alike.
 
 ### Key Features
 
@@ -138,7 +140,9 @@ docker-compose up
 
 ---
 
-## 🎭 User Personas
+## 🎭 User Personas (example presets)
+
+These are **starting tags**, not a limit on who the app is for:
 
 | Persona | Account Purpose | Default Tags |
 |---------|-----------------|--------------|
